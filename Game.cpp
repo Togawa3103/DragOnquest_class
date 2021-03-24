@@ -4,12 +4,16 @@
 #include "Game.h"
 #include "Player.h"
 #include "MAP.h"
+#include "Mode.h"
+
 int Game::FPS = 144;
 float Game::mFPS = 1000.f / FPS;
 int Game::Game_Mode = 0;
 clock_t Game::end;
 clock_t Game::now;
 double Game::looptime;
+
+
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     ChangeWindowMode(TRUE);
     SetGraphMode(600, 500, 32);
@@ -39,15 +43,44 @@ void Game::Initialize() {
 void Game::Game_Main() {
     Player player;
     MAP map;
+    Mode mode;
+    map.Initialize();
+    map.Load_MAP(map.MAP_Num);
+    map.Draw_FIELD();
+    mode.Initialize();
+    map.Initialize();
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
-
+        player.Update_Status(player.Player_Lv);
+        GetHitKeyStateAll(mode.keyState);
         //ScreenFlip();
         //ClearDrawScreen();
+        if (mode.GameMode==GameMode_FIELD) {
+            mode.Field_Mode();
+        }
+        else if (mode.GameMode==GameMode_MENU) {
+            map.Draw_FIELD();
+            if (mode.Selected_Menu < 0) {
+                mode.Menu_Mode();
+            }
+            else if (mode.Selected_Menu == MenuType_DOOR) {
+                mode.Menu_DireSelect(mode.Selected_Menu);
+            }
+            else if (mode.Selected_Menu==MenuType_SEARCH) {
+                mode.Menu_DireSelect(mode.Selected_Menu);
+            }
+            else if (mode.Selected_Menu==MenuType_Item) {
+                mode.Item_Select();
+            }
+            else if (mode.Selected_Menu==MenuType_STATUS) {
+                mode.Status_Show();
+            }
+        }
+        mode.old_E_keyState = mode.keyState[KEY_INPUT_E];
+        mode.old_RETURN_keyState = mode.keyState[KEY_INPUT_RETURN];
+        mode.old_ESCAPE_keyState = mode.keyState[KEY_INPUT_RETURN];
+        
         Game::now = clock();
         Game::looptime = Game::now - Game::end;
-        MAP::Initialize();
-        MAP::Load_MAP();
-        MAP::Draw_FIELD();
         if (Game::looptime<Game::mFPS) {
             Sleep(Game::mFPS-Game::looptime);
         }

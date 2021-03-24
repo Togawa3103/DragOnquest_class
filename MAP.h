@@ -23,7 +23,7 @@ typedef struct {
 
 static MAP_DATA map_data[] = {
 	{"map_test_door.bmp",{{1,6,8}}},
-	{"map_test_next.bmp",{{0,6,6}}},
+	{"map_test_next.bmp",{{0,22,21}}},
 };
 
 typedef struct {
@@ -98,5 +98,5 @@ public:
 	~MAP();
 	static void Initialize();
 	static void Draw_FIELD();
-	static void Load_MAP();
+	static void Load_MAP(int MAP_Num);
 };

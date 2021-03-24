@@ -21,9 +21,9 @@ typedef struct {
 
 static PLAYER_STATUS player_status[] = {
 	{20,-1,0,-1,5,5,5,5,5,-1,-1},//Lv1
-	{25,-1,5,-1,5,5,5,5,5,-1,-1},//Lv2
-	{23,-1,0,-1,5,5,5,5,5,-1,-1},//Lv3
-	{25,-1,0,-1,5,5,5,5,5,-1,-1},//Lv4
+	{25,-1,5,-1,8,7,7,7,5,-1,-1},//Lv2
+	{30,-1,10,-1,11,10,10,10,5,-1,-1},//Lv3
+	{35,-1,15,-1,14,13,13,13,5,-1,-1},//Lv4
 };
 
 static STATUS status[] = {
@@ -54,6 +54,9 @@ enum {
 	STATUS_EXP,
 	STATUS_MAX,
 };
+
+static int LVUP_EXP[] = {10,30,50,70};
+
 class Player {
 public:
 	static int Player_Time;
@@ -70,8 +73,8 @@ public:
 	static int Gold;
 	static int Exp;
 	static std::vector<int> ItemBox; //‚à‚¿‚à‚Ì
-	
-	
+	static bool Lv_Up;
+	static bool haveKey;
 
 	static PLAYER_STATUS now_player_status;
 	static int Player_Status[STATUS_MAX];

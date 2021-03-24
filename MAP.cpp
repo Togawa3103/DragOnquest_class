@@ -6,10 +6,10 @@
 
 int MAP::MAP_Num = 0;
 const char *MAP::File_Name = map_data[MAP_Num].Map_Name;
-int MAP::Screen_X = Player::Player_X;
-int MAP::Screen_Y = Player::Player_Y;
-int MAP::Move_Count_X = 0;
-int MAP::Move_Count_Y = 0;
+int MAP::Screen_X;
+int MAP::Screen_Y;
+int MAP::Move_Count_X;
+int MAP::Move_Count_Y;
 bool MAP::canmove[MAP_HEIGHT][MAP_WIDTH];
 int MAP::map[MAP_HEIGHT][MAP_WIDTH];
 int MAP::cells[MAP_HEIGHT][MAP_WIDTH];
@@ -21,6 +21,10 @@ MAP::MAP() {
 
 MAP::~MAP() {}
 void MAP::Initialize() {
+    MAP::Screen_X = 0;
+    MAP::Screen_Y = 0;
+    MAP::Move_Count_Y = 0;
+    MAP::Move_Count_X = 0;
     
 }
 void MAP::Draw_FIELD(){
@@ -30,12 +34,12 @@ void MAP::Draw_FIELD(){
     if (Player::Player_X < Player::old_Player_X) {
         MAP::Screen_X--;
     }
-    if (Screen_X > 8 && Player::Player_X > Player::old_Player_X) {
-        MAP::Screen_X = 8;
+    if (MAP::Screen_X > 7 && Player::Player_X > Player::old_Player_X) {
+        MAP::Screen_X = 7;
         MAP::Move_Count_X++;
     }
-    else if (Screen_X < 3 && Player::Player_X < Player::old_Player_X) {
-        MAP::Screen_X = 3;
+    else if (MAP::Screen_X < 2 && Player::Player_X < Player::old_Player_X) {
+        MAP::Screen_X = 2;
         if (MAP::Move_Count_X > 0) {
             MAP::Move_Count_X--;
         }
@@ -47,8 +51,8 @@ void MAP::Draw_FIELD(){
     if (Player::Player_Y < Player::old_Player_Y) {
         MAP::Screen_Y--;
     }
-    if (MAP::Screen_Y > 7 && Player::Player_Y > Player::old_Player_Y) {
-        MAP::Screen_Y = 7;
+    if (MAP::Screen_Y > 8 && Player::Player_Y > Player::old_Player_Y) {
+        MAP::Screen_Y = 8;
         MAP::Move_Count_Y++;
     }
     else if (MAP::Screen_Y < 4 && Player::Player_Y < Player::old_Player_Y) {
@@ -72,7 +76,9 @@ void MAP::Draw_FIELD(){
     }
 }
 
-void MAP::Load_MAP() {
+void MAP::Load_MAP(int MAP_Num) {
+    MAP::Initialize();
+    MAP::File_Name = map_data[MAP_Num].Map_Name;
     FILE* pFile = fopen(MAP::File_Name, "rb");
     if (pFile == NULL) {
         DxLib_End();
