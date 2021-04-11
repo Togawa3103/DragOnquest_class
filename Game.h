@@ -1,11 +1,12 @@
 #include <time.h>
 
+
 class Game {
 public:
 	Game();
 	~Game();
 	static void Initialize();
-	static void Game_Main();
+	void Game_Main();
 public:
 	static int Game_Mode;
 	static int FPS;

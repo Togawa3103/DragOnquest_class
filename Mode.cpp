@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "MAP.h"
 #include "Enum.h"
-
+#include "Battle.h"
 
 
 int Mode::GameMode;
@@ -16,6 +16,7 @@ int Mode::Select_Menu_Num;
 int Mode::Select_Dire_Num;
 int Mode::Select_Item;
 int Mode::Selected_Menu;
+
 
 void Mode::Initialize() {
     Mode::GameMode=0;
@@ -76,7 +77,7 @@ void Mode::Field_Mode() {
 
     MAP::Draw_FIELD();
 
-    if (MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_STEPS) {
+    if (MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_STEPS&&(Player::Player_X!=Player::old_Player_X||Player::Player_Y != Player::old_Player_Y)) {
         for (int i = 0; i < map_data[MAP::MAP_Num].map_info.size(); i++) {
             if (Player::Player_X == map_data[MAP::MAP_Num].map_info[i].Start_X && Player::Player_Y == map_data[MAP::MAP_Num].map_info[i].Start_Y) {
                 MAP::MAP_Num = map_data[MAP::MAP_Num].map_info[i].toMap_Num;
@@ -84,25 +85,28 @@ void Mode::Field_Mode() {
                 MAP::Load_MAP(MAP::MAP_Num);
                 Player::Player_X = map_data[MAP::MAP_Num].map_info[i].Start_X;
                 Player::Player_Y = map_data[MAP::MAP_Num].map_info[i].Start_Y;
+                Player::old_Player_X = Player::Player_X;
+                Player::old_Player_Y = Player::Player_Y;
                 if (Player::Player_X>8) {
-                    MAP::Move_Count_X = Player::Player_X - 8;
+                    MAP::Move_Count_X = Player::Player_X - 6;
                 }
                 else {
                     MAP::Move_Count_X = 0;
                 }
                 if (Player::Player_Y > 7) {
-                    MAP::Move_Count_Y = Player::Player_Y - 7;
+                    MAP::Move_Count_Y = Player::Player_Y - 4;
                 }
                 else {
                     MAP::Move_Count_Y = 0;
                 }
-                MAP::Screen_X = Player::Player_X;
-                MAP::Screen_Y = Player::Player_Y;
+                MAP::Screen_X = 5;
+                MAP::Screen_Y = 5;
             }
         }
     }
     if (Player:: Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
         Player::Exp++;
+        Mode::GameMode=Battle::Start_Battle(Player::PlayerCount);
     }
     Player::old_Player_X = Player::Player_X;
     Player::old_Player_Y = Player::Player_Y;

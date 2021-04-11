@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "MAP.h"
 #include "Mode.h"
+#include "Battle.h"
 
 int Game::FPS = 144;
 float Game::mFPS = 1000.f / FPS;
@@ -25,22 +26,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     
     ClearDrawScreen();
     Game game;
+    game.Initialize();
     game.Game_Main();
     WaitKey();      // キー入力待ち
     DxLib_End();    // DXライブラリ終了処理
     return 0;
 }
+
 Game::Game() {
 }
 Game::~Game() {
 }
 
 void Game::Initialize() {
-    
-    Game::end = clock();
-}
-
-void Game::Game_Main() {
     Player player;
     MAP map;
     Mode mode;
@@ -48,41 +46,55 @@ void Game::Game_Main() {
     map.Load_MAP(map.MAP_Num);
     map.Draw_FIELD();
     mode.Initialize();
-    map.Initialize();
+    end = clock();
+    
+}
+
+void Game::Game_Main() {
+    Initialize();
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
-        player.Update_Status(player.Player_Lv);
-        GetHitKeyStateAll(mode.keyState);
+        Player::Update_Status(Player::Player_Lv);
+        GetHitKeyStateAll(Mode::keyState);
         //ScreenFlip();
         //ClearDrawScreen();
-        if (mode.GameMode==GameMode_FIELD) {
-            mode.Field_Mode();
+        if (Mode::GameMode==GameMode_FIELD) {
+            Mode::Field_Mode();
         }
-        else if (mode.GameMode==GameMode_MENU) {
-            map.Draw_FIELD();
-            if (mode.Selected_Menu < 0) {
-                mode.Menu_Mode();
+        else if (Mode::GameMode==GameMode_BATTLE) {
+            if (Battle::Monster_Num < 0) {
+                Battle::Initialize();
             }
-            else if (mode.Selected_Menu == MenuType_DOOR) {
-                mode.Menu_DireSelect(mode.Selected_Menu);
+            int comand=Battle::Set_Comand();
+            Battle::Draw_Battle(comand);
+            Battle::Update_Battle(comand);
+        }
+        else if (Mode::GameMode==GameMode_MENU) {
+            MAP::Draw_FIELD();
+            if (Mode::Selected_Menu < 0) {
+                Mode::Menu_Mode();
             }
-            else if (mode.Selected_Menu==MenuType_SEARCH) {
-                mode.Menu_DireSelect(mode.Selected_Menu);
+            else if (Mode::Selected_Menu == MenuType_DOOR) {
+                Mode::Menu_DireSelect(Mode::Selected_Menu);
             }
-            else if (mode.Selected_Menu==MenuType_Item) {
-                mode.Item_Select();
+            else if (Mode::Selected_Menu==MenuType_SEARCH) {
+                Mode::Menu_DireSelect(Mode::Selected_Menu);
             }
-            else if (mode.Selected_Menu==MenuType_STATUS) {
-                mode.Status_Show();
+            else if (Mode::Selected_Menu==MenuType_Item) {
+                Mode::Item_Select();
+            }
+            else if (Mode::Selected_Menu==MenuType_STATUS) {
+                Mode::Status_Show();
             }
         }
-        mode.old_E_keyState = mode.keyState[KEY_INPUT_E];
-        mode.old_RETURN_keyState = mode.keyState[KEY_INPUT_RETURN];
-        mode.old_ESCAPE_keyState = mode.keyState[KEY_INPUT_RETURN];
+        Mode::old_E_keyState = Mode::keyState[KEY_INPUT_E];
+        Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
+        Mode::old_ESCAPE_keyState = Mode::keyState[KEY_INPUT_RETURN];
         
-        Game::now = clock();
-        Game::looptime = Game::now - Game::end;
-        if (Game::looptime<Game::mFPS) {
-            Sleep(Game::mFPS-Game::looptime);
+        now = clock();
+        looptime = now -end;
+        if (looptime<mFPS) {
+            Sleep(mFPS-looptime);
         }
+        end = now;
     }
 }

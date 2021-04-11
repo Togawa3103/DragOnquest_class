@@ -21,9 +21,9 @@ typedef struct {
 
 static PLAYER_STATUS player_status[] = {
 	{20,-1,0,-1,5,5,5,5,5,-1,-1},//Lv1
-	{25,-1,5,-1,8,7,7,7,5,-1,-1},//Lv2
-	{30,-1,10,-1,11,10,10,10,5,-1,-1},//Lv3
-	{35,-1,15,-1,14,13,13,13,5,-1,-1},//Lv4
+	{5,-1,5,-1,3,3,3,3,3,-1,-1},//Lv2
+	{5,-1,5,-1,11,15,5,5,3,-1,-1},//Lv3
+	{5,-1,5,-1,14,13,13,13,5,-1,-1},//Lv4
 };
 
 static STATUS status[] = {
@@ -75,13 +75,13 @@ public:
 	static std::vector<int> ItemBox; //‚à‚¿‚à‚Ì
 	static bool Lv_Up;
 	static bool haveKey;
-
+	
 	static PLAYER_STATUS now_player_status;
-	static int Player_Status[STATUS_MAX];
+	
 
 public:
 	Player();
 	~Player();
 	void Initialize();
-	void Update_Status(int Player_Lv);
+	static void Update_Status(int Player_lv);
 };

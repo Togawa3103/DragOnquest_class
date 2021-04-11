@@ -74,10 +74,10 @@ public:
 	static int Select_Item;
 	static int Selected_Menu;
 
-	void Initialize();
-	void Field_Mode();
-	void Menu_Mode();
-	void Menu_DireSelect(int Selected_Menu_Num);
-	void Item_Select();
-	void Status_Show();
+	static void Initialize();
+	static void Field_Mode();
+	static void Menu_Mode();
+	static void Menu_DireSelect(int Selected_Menu_Num);
+	static void Item_Select();
+	static void Status_Show();
 };

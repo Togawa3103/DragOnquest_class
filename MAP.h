@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include "DxLib.h"
+
 #define MAP_HEIGHT 50
 #define MAP_WIDTH 52
 
@@ -23,7 +25,7 @@ typedef struct {
 
 static MAP_DATA map_data[] = {
 	{"map_test_door.bmp",{{1,6,8}}},
-	{"map_test_next.bmp",{{0,22,21}}},
+	{"map_castle.bmp",{{0,19,17}}},
 };
 
 typedef struct {
@@ -45,7 +47,7 @@ static CELLDESC cellDescs[] = {
 	{0,255,0,TRUE},//CELL_TYPE_FLOOR
 	{0,0,0,FALSE},//CELL_TYPE_DOOR
 	{232,162,0,TRUE},//CELL_TYPE_STEPS
-	{0,255,255,FALSE},
+	{0,255,255,FALSE},//CELL_TYPE_TREASURE
 	{255,0,0,FALSE}//CELL_TYPE_PLAYER
 };
 

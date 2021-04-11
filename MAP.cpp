@@ -28,6 +28,7 @@ void MAP::Initialize() {
     
 }
 void MAP::Draw_FIELD(){
+    
     if (Player::Player_X > Player::old_Player_X) {
         MAP::Screen_X++;
     }
@@ -110,6 +111,7 @@ void MAP::Load_MAP(int MAP_Num) {
                 unsigned int Cr = GetColor(255, 255, 255);
                 DrawFormatString(50, 50, Cr, "%d %d", y, x);
                 DrawFormatString(100, 50, Cr, "%d %d %d", bgr.b, bgr.g, bgr.r);
+                ScreenFlip();
                 WaitKey();
                 DxLib_End();
             }

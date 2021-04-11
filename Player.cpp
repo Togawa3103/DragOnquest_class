@@ -15,10 +15,11 @@ int Player::Gold = 0;
 int Player::Exp = 0;
 std::vector<int> Player::ItemBox = { 0,2,3,4 }; //‚à‚¿‚à‚Ì
 PLAYER_STATUS Player::now_player_status = (player_status[Player::Player_Lv - 1]);
-int Player::Player_Status[STATUS_MAX];
+
 
 bool Player::haveKey=false;
 bool Player::Lv_Up = false;
+
 
 Player::Player() {
 	Player::Initialize();
@@ -35,33 +36,32 @@ void Player::Initialize() {
 	now_player_status.EXP = Exp;
 	int* p;
 	p = &(now_player_status.MAXHP);
-	for (int i = 0; i < STATUS_MAX; i++) {
-		Player_Status[i] = *(p + i);
-	}
+	
 }
 
-void Player::Update_Status(int Player_Lv) {
-	if (Exp>=LVUP_EXP[Player_Lv-1]) {
-		Player::Player_Lv++;
+void Player::Update_Status(int Player_lv) {
+	if (Exp>=LVUP_EXP[Player_lv-1]) {
+		Player_Lv++;
 		Lv_Up = true;
 	}
 	if (Lv_Up) {
-		int now_HP = now_player_status.HP;
-		int now_MP = now_player_status.MP;
-		int now_GOLD = now_player_status.GOLD;
-		int now_EXP = now_player_status.EXP;
-
+		now_player_status.MAXHP = now_player_status.MAXHP + player_status[Player::Player_Lv - 1].MAXHP;
+		now_player_status.MAXMP = now_player_status.MAXMP + player_status[Player::Player_Lv - 1].MAXMP;
+		now_player_status.ATTACK = now_player_status.ATTACK + player_status[Player::Player_Lv - 1].ATTACK;
+		now_player_status.DEFENSE = now_player_status.DEFENSE + player_status[Player::Player_Lv - 1].DEFENSE;
+		now_player_status.SPEED = now_player_status.SPEED + player_status[Player::Player_Lv - 1].SPEED;
+		now_player_status.WISE = now_player_status.WISE + player_status[Player::Player_Lv - 1].WISE;
+		now_player_status.MAGICDEF = now_player_status.MAGICDEF + player_status[Player::Player_Lv - 1].MAGICDEF;
+		Lv_Up = false;
 	}
-	now_player_status = (player_status[Player_Lv - 1]);
+	//now_player_status = (player_status[Player_Lv - 1]);
 	now_player_status.HP = HP;
 	now_player_status.MP = MP;
 	now_player_status.GOLD = Gold;
 	now_player_status.EXP = Exp;
 	int* p;
 	p = &(now_player_status.MAXHP);
-	for (int i = 0; i < STATUS_MAX; i++) {
-		Player_Status[i] = *(p + i);
-	}
+	
 	haveKey = false;
 	for (int i = 0; i < ItemBox.size(); i++) {
 		if (ItemBox[i] == Item_Key) {
