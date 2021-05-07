@@ -14,5 +14,6 @@ public:
 	static clock_t end;
 	static clock_t now;
 	static double looptime;
+	static int comand;
 	
 };

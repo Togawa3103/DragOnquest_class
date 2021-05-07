@@ -105,8 +105,9 @@ void Mode::Field_Mode() {
         }
     }
     if (Player:: Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
-        Player::Exp++;
+        //Player::Exp++;
         Mode::GameMode=Battle::Start_Battle(Player::PlayerCount);
+        Battle::Battle_Now = true;
     }
     Player::old_Player_X = Player::Player_X;
     Player::old_Player_Y = Player::Player_Y;
