@@ -21,11 +21,12 @@ typedef struct {
 typedef struct {
 	const char* Map_Name;
 	std::vector<MAP_INFO> map_info;
+	std::vector<int > NPC_Num;
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp",{{1,6,8}}},
-	{"map_castle.bmp",{{0,19,17}}},
+	{"map_test_door.bmp",{{1,6,8}},{0}},
+	{"map_castle.bmp",{{0,19,17}},{}},
 };
 
 typedef struct {
@@ -48,7 +49,8 @@ static CELLDESC cellDescs[] = {
 	{0,0,0,FALSE},//CELL_TYPE_DOOR
 	{232,162,0,TRUE},//CELL_TYPE_STEPS
 	{0,255,255,FALSE},//CELL_TYPE_TREASURE
-	{255,0,0,FALSE}//CELL_TYPE_PLAYER
+	{255,0,0,FALSE},//CELL_TYPE_PLAYER
+
 };
 
 
@@ -67,8 +69,9 @@ enum {
 	CELL_TYPE_FLOOR,
 	CELL_TYPE_DOOR,
 	CELL_TYPE_STEPS,
-	CELL_TYPE_TRESURE,
+	CELL_TYPE_TREASURE,
 	CELL_TYPE_PLAYER,
+	CELL_TYPE_NPC,
 	CELL_TYPE_MAX,
 };
 
@@ -77,9 +80,10 @@ enum {
 	GRAPH_TYPE_FLOOR,
 	GRAPH_TYPE_DOOR,
 	GRAPH_TYPE_STEPS,
-	GRAPH_TYPE_TRESURE,
+	GRAPH_TYPE_TREASURE,
 	GRAPH_TYPE_PLAYER,
 	GRAPH_TYPE_PLAYER2,
+	GRAPH_TYPE_NPC_KING,
 	GRAPH_TYPE_MAX,
 };
 

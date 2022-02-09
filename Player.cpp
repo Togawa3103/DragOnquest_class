@@ -8,12 +8,13 @@ int Player::Player_X = 4;
 int Player::Player_Y = 4;
 int Player::old_Player_X = Player_X;
 int Player::old_Player_Y = Player_Y;
-int Player::HP = 10;
+int Player::HP = 20;
 int Player::MP = 5;
 int Player::Player_Lv = 1;
 int Player::Gold = 0;
 int Player::Exp = 0;
-std::vector<int> Player::ItemBox = { 0,2,3,4 }; //‚à‚¿‚à‚Ì
+std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4 }; //‚à‚¿‚à‚Ì
+std::vector<int> Player::MagicBox = {magic_1,magic_2};
 PLAYER_STATUS Player::now_player_status = (player_status[Player::Player_Lv - 1]);
 
 
@@ -53,6 +54,9 @@ void Player::Update_Status(int Player_lv) {
 		now_player_status.WISE = now_player_status.WISE + player_status[Player::Player_Lv - 1].WISE;
 		now_player_status.MAGICDEF = now_player_status.MAGICDEF + player_status[Player::Player_Lv - 1].MAGICDEF;
 		Lv_Up = false;
+		for (int i = 0; i < player_status[Player::Player_Lv - 1].Learn_Magic.size();i++) {
+			MagicBox.push_back(player_status[Player::Player_Lv - 1].Learn_Magic[i]);
+		}
 	}
 	//now_player_status = (player_status[Player_Lv - 1]);
 	now_player_status.HP = HP;

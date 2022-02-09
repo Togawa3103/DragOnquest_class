@@ -35,7 +35,10 @@ public:
 	static bool Comand_RunAway();
 	//static void Update_Battle(int Comand);
 	static void Finish_Battle(int Comand);
-	static void Draw_Message(int Comand,int turn);
+	static void Draw_Message(int Comand, int turn,bool canrun);//“¦‚°‚é
+	static void Draw_Message(int Comand, int turn);//UŒ‚
+	static void Draw_Message(int Comand,int turn,int magic_num);//–‚–@
+	static void Draw_Message(int Comand,int turn, int item_Num, bool canuse);//“¹‹ï
 	static void check_speed();
 	//static void Player_Turn(int Comand);
 	static int Enemy_AI();
@@ -44,9 +47,11 @@ public:
 	static void Update_Player(int Comand);
 	static void Update_Monster(int Comand);
 	static void Cal_Damage(int turn,int Comand);
+	static void Cal_Damage(int turn, int Comand, int Magic_Num);
+	static void Cal_Damage(int turn, int Comand, int item_Num,bool canuse);
 	static bool Check_Battle_End();
 
-	static int Turn;//-1:Enemy 1:Player
+	static int Turn;//0:Enemy 1:Player
 	static bool Battle_Now;
 	static bool canRun;
 	static int Monster_Num;

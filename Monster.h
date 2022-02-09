@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "Magic.h"
 #include <vector>
 enum {
 	Monster_Slime,
@@ -7,7 +8,7 @@ enum {
 };
 
 enum {
-	Attack_1,
+	Attack_1,//Attack
 	Attack_MAX,
 };
 
@@ -30,7 +31,7 @@ static Monster_Status slime = {
 class Monster {
 public:
 	static int set_Monster(int MAP_Num);
-	static void Cal_Damage(int Comand);
+	//static void Cal_Damage(int Comand);
 	static int now_HP;
 	static int now_MP;
 	static int now_Attack;

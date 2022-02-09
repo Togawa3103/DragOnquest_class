@@ -3,7 +3,7 @@
 #include "MAP.h"
 #include "Player.h"
 #include "Game.h"
-
+#include "NPC.h"
 int MAP::MAP_Num = 0;
 const char *MAP::File_Name = map_data[MAP_Num].Map_Name;
 int MAP::Screen_X;
@@ -75,6 +75,7 @@ void MAP::Draw_FIELD(){
     else {
         DrawExtendGraph((Player::Player_X - MAP::Move_Count_X) * 50, (Player::Player_Y - MAP::Move_Count_Y) * 50, (Player::Player_X - MAP::Move_Count_X) * 50 + 50, (Player::Player_Y - MAP::Move_Count_Y) * 50 + 50, graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
     }
+    NPC::Draw_NPC(NPC::npc_num);
 }
 
 void MAP::Load_MAP(int MAP_Num) {
@@ -123,4 +124,5 @@ void MAP::Load_MAP(int MAP_Num) {
     for (int i = 0; i < GRAPH_TYPE_MAX; i++) {
         graphDescs[i].Graph_Handle = LoadGraph(graphDescs[i].Graph_Name);
     }
+    NPC::Load_NPC(MAP::MAP_Num);
 }

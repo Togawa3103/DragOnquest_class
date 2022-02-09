@@ -5,7 +5,7 @@
 #include "Game.h"
 #include "MAP.h"
 #include "Monster.h"
-
+#include "Enum.h"
 #include<random>
 
 int Battle::Monster_Num = -1;
@@ -17,11 +17,15 @@ int Battle::Turn;
 unsigned int Comand_Cr1 = GetColor(255, 255, 255);
 unsigned int Comand_Cr2 = GetColor(0, 0, 0);
 
-bool debug = true;
+bool debug = false;
 Battle::Battle() {}
 Battle::~Battle(){};
 
 int damage=0;
+int Heal = 0;
+int select_magic = 0;
+int select_item = 0;
+bool canuse = true;
 
 void Battle::Initialize() {
     Battle::Monster_Num= Monster::set_Monster(MAP::MAP_Num);
@@ -39,6 +43,11 @@ void Battle::Draw_Battle() {
     DrawBox(150, 50, 450, 360, Comand_Cr1, TRUE);
     DrawBox(160, 60, 440, 350, Comand_Cr2, TRUE);
     DrawExtendGraph(225,150,375,300,Battle::Monster_graph,true);
+    
+    DrawBox(10, 10, 100, 100, Comand_Cr1, TRUE);
+    DrawBox(20, 20, 90, 90, Comand_Cr2, TRUE);   
+    DrawFormatString(30, 30, Comand_Cr1, "HP:%d", Player::HP);
+    DrawFormatString(30, 60, Comand_Cr1, "MP:%d", Player::MP);
     if (debug) {
         DrawBox(0,0,200,200,Comand_Cr1,TRUE);
         DrawFormatString(10,10,Comand_Cr2,"%d",Monster::now_HP);
@@ -80,8 +89,7 @@ int Battle::Set_Comand() {
         }
 
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-
-            Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
             return Select_Comand;
         }
         if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
@@ -95,45 +103,208 @@ int Battle::Set_Comand() {
     if (Player::Player_Time > 200) {
         Player::Player_Time = 0;
     }
+
     return -1;
 }
 
-/*void Battle::Update_Battle(int Comand) {
-    switch (Comand) {
-    case Comand_Run:
-        if (Battle::Comand_RunAway() && !canRun) {
-            canRun = true;
+//魔法の選択
+int Battle::Select_Magic() {
+    DrawBox(100, 370, 210, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 200, 490, Comand_Cr2, TRUE);
+
+    for (int i = 0; i < Comand_Max; i++) {
+        if (Select_Comand == i) {
+            DrawBox(comand[i].x - 5, comand[i].y - 5, 195, comand[i].y + 18, Comand_Cr1, TRUE);
+            DrawFormatString(comand[i].x, comand[i].y, Comand_Cr2, comand[i].string);
         }
-        if (canRun) {
-            Battle::Battle_Now = false;
-        }
-        Draw_Message(Comand,Turn);
-        if (Player::Player_Time == 0) {
-            if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-                Turn = 1 - Turn;
-            }
-        }
-        if (Player::Player_Time != 0) {
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
-        }
-        if (Player::Player_Time > 200) {
-            Player::Player_Time = 0;
-        }
-     
-    case Comand_Fight:
-        
-        
-        if (slime.enemy_status.HP<0) {
-            Battle::Battle_Now = false;
+        else {
+            DrawFormatString(comand[i].x, comand[i].y, Comand_Cr1, comand[i].string);
         }
     }
+    DrawBox(220, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(230, 380, 490, 490, Comand_Cr2, TRUE);
+    for (int i = 0; i < Player:: MagicBox.size(); i++) {
+        if (select_magic == i) {
+            DrawBox(240 + (i % 2) * 60-5, 390 + (i / 2) * 30-5, 240 + (i % 2) * 60+55, 390 + (i / 2) * 30+30, Comand_Cr1, TRUE);
+            DrawFormatString(240 + (i % 2) * 60, 390 + (i / 2) * 30, Comand_Cr2, "%s", magic[Player::MagicBox[i]].magic_name);
+        }
+        else {
+            DrawFormatString(240 + (i % 2) * 60, 390 + (i / 2) * 30, Comand_Cr1, "%s", magic[Player::MagicBox[i]].magic_name);
+        }
+        
+    }
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_S]) {
+            if ((select_magic - (select_magic % 2 * 2) + 2) % magic_MAX <Player::MagicBox.size()) {
+                select_magic = (select_magic + 2) % magic_MAX;
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+        }
+        if (Mode::keyState[KEY_INPUT_W]) {
+            if ((select_magic - (select_magic % 2 * 2) + 2) % magic_MAX <Player::MagicBox.size()) {
+                select_magic = (select_magic +  2) % magic_MAX;
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+        }
+        if (Mode::keyState[KEY_INPUT_D]) {
+            if ((select_magic - (select_magic % 2 * 2) + 1) % magic_MAX < Player::MagicBox.size()) {
+                select_magic = (select_magic + 5 + (select_magic % 2 * 2)) % magic_MAX;
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+        }
+        if (Mode::keyState[KEY_INPUT_A]) {
+            if ((select_magic - (select_magic % 2 * 2) + 1) % magic_MAX < Player::MagicBox.size()) {
+                select_magic = (select_magic - (select_magic % 2 * 2) + 1) % magic_MAX;
+
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+        }
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            return select_magic;
+        }
+        if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
+            Game::comand = -1;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 200) {
+        Player::Player_Time = 0;
+    }
+    
+    return -1;
 }
-*/
-int Battle::Select_Magic() {
-    return 0;
-}
+
+//バトル中のアイテム選択
 int Battle::Select_Item() {
-    return 0;
+    DrawBox(100, 370, 210, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 200, 490, Comand_Cr2, TRUE);
+    //int max_item_top = Player::ItemBox.size()-(2-Player::ItemBox.size() % 4/2) + 4 * (Player::ItemBox.size() / 4);
+    int max_item_top = Player::ItemBox.size()-(Player::ItemBox.size()%4-Player::ItemBox.size() % 4/2) ;
+    int max_item_bottom = Player::ItemBox.size()-1;
+    //コマンドメニューの表示
+    for (int i = 0; i < Comand_Max; i++) {
+        if (Select_Comand == i) {
+            DrawBox(comand[i].x - 5, comand[i].y - 5, 195, comand[i].y + 18, Comand_Cr1, TRUE);
+            DrawFormatString(comand[i].x, comand[i].y, Comand_Cr2, comand[i].string);
+        }
+        else {
+            DrawFormatString(comand[i].x, comand[i].y, Comand_Cr1, comand[i].string);
+        }
+    }
+    DrawBox(220, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(230, 380, 490, 490, Comand_Cr2, TRUE);
+    //アイテム一覧の表示
+    for (int i = 0; i < 4; i++) {
+        if (Player::ItemBox.size()>(select_item/4)*4+i) {
+            if (select_item == i + ((select_item / 4) * 4)) {
+                DrawBox(240 + (i % 2) * 120 - 5, 390 + (i / 2) * 30 - 5, 240 + (i % 2) * 120 + 120, 390 + (i / 2) * 30 + 30, Comand_Cr1, TRUE);
+                DrawFormatString(240 + (i % 2) * 120, 390 + (i / 2) * 30, Comand_Cr2, "%s", item[Player::ItemBox[i + ((select_item / 4) * 4)]].Item_name);
+            }
+            else {
+                DrawFormatString(240 + (i % 2) * 120, 390 + (i / 2) * 30, Comand_Cr1, "%s", item[Player::ItemBox[i + ((select_item / 4) * 4)]].Item_name);
+            }
+        }
+    }
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_S]) {
+            if ((select_item%3==1||select_item%3==0)&&select_item+2<Player::ItemBox.size()) {
+                select_item=select_item + 2;
+                
+            }
+            else {
+                select_item = select_item - 2;
+            }
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Mode::keyState[KEY_INPUT_W]) {
+            if ((select_item % 3 == 1 || select_item % 3 == 0) && select_item + 2 < Player::ItemBox.size()) {
+                select_item = select_item + 2;
+
+            }
+            else {
+                select_item = select_item - 2;
+            }
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Mode::keyState[KEY_INPUT_D]) {
+            
+            if (select_item%2==0) {
+                if (select_item + 1 < Player::ItemBox.size()) {
+                    select_item = select_item + 1;
+                }
+                else {
+                    if (select_item % 4 > 1) {
+                        select_item = 2;
+                    }
+                    else {
+                        select_item = 0;
+                    }
+                }
+            }
+            else {
+                if (select_item+3<Player::ItemBox.size()) {
+                    select_item = select_item + 3;
+                }
+                else {
+                    if (select_item + 1 < Player::ItemBox.size() - (1-select_item%4/2)) {
+                        select_item = select_item +1;
+                    }
+                    else {
+                        if (select_item%4>1) {
+                            select_item = 2;
+                        }
+                        else {
+                            select_item = 0;
+                        }
+                       
+                    }
+                }
+            }
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Mode::keyState[KEY_INPUT_A]) {
+            
+            if (select_item%2!=0) {
+                select_item = select_item - 1;
+            }
+            else if(select_item%2==0){
+                if (!(select_item-3<0)) {
+                    select_item = select_item - 3;
+                }
+                else {
+                    if (select_item%4 / 2 == 0) {
+                        select_item = max_item_top;
+                    }
+                    else if(select_item%4/2!=0){
+                        select_item = max_item_bottom;
+                    }
+                }
+            }
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            return select_item;
+        }
+        if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
+            Game::comand = -1;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 200) {
+        Player::Player_Time = 0;
+    }
+    return -1;
 }
 bool Battle::Comand_RunAway() {
     std::random_device rand;
@@ -145,68 +316,18 @@ bool Battle::Comand_RunAway() {
     }
 }
 
-void Battle::Finish_Battle(int Comand) {
-   /* switch (Comand) {
-    case Comand_Run:
-        Draw_Message(Comand,Turn);
-        if (Player::Player_Time == 0) {
-            if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-                Mode::GameMode = GameMode_FIELD;
-                
-                break;
-            }
-        }
-        if (Player::Player_Time != 0) {
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
-        }
-        if (Player::Player_Time > 200) {
-            Player::Player_Time = 0;
-        }
-    case Comand_Fight:
-        //Draw_Message(Comand, Turn);
-        if (Player::Player_Time == 0) {
-            if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-                Mode::GameMode = GameMode_FIELD;
 
-                break;
-            }
-        }
-        if (Player::Player_Time != 0) {
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
-        }
-        if (Player::Player_Time > 200) {
-            Player::Player_Time = 0;
-        }
-    }
-    */
-    if (Player::Player_Time == 0) {
-        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-            Mode::GameMode = GameMode_FIELD;
-        }
-    }
+//逃げる
+void Battle::Draw_Message(int Comand, int turn,bool canrun) {
     
-    Draw_Battle();
-    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
-    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
-    DrawFormatString(115, 385, Comand_Cr1, "せんとうしゅうりょう");
-    if (Player::Player_Time != 0) {
-        Player::Player_Time = Player::Player_Time + Game::mFPS;
-    }
-    if (Player::Player_Time > 200) {
-        Player::Player_Time = 0;
-    }
-        
-}
-
-void Battle::Draw_Message(int Comand,int turn) {
-    switch (Comand) {
-    case Comand_Run:
+  
         if (Player::Player_Time == 0) {
             if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
                 Game::comand = -1;
                 Turn = 1 - Turn;
-
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
+
         }
         if (canRun) {
             Draw_Battle();
@@ -227,18 +348,20 @@ void Battle::Draw_Message(int Comand,int turn) {
         if (Player::Player_Time > 200) {
             Player::Player_Time = 0;
         }
+       
+}
 
-        break;
-    case Comand_Fight:
+//攻撃
+void Battle::Draw_Message(int Comand,int turn) {
         if (Player::Player_Time == 0) {
             if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
                  Game::comand = -1;
                  Turn = 1 - Turn;
-                 
+                 Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
+
         }
-        
-        
+
         DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
         DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
         if (turn ==1) {          
@@ -254,11 +377,109 @@ void Battle::Draw_Message(int Comand,int turn) {
         if (Player::Player_Time > 200) {
             Player::Player_Time = 0;
         }
-        break;
-    }
+        
 
 }
 
+//魔法
+void Battle::Draw_Message(int Comand, int turn, int magic_num) {
+        if (Player::Player_Time == 0) {
+            if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+                Game::comand = -1;
+                Game::select_magic = -1;
+                select_magic = 0;
+                Turn = 1 - Turn;
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+
+        }
+
+
+        DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+        DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+        switch (magic_num) {
+        case magic_1:
+            if (turn == 1) {
+                if (!canuse) {
+                    DrawFormatString(115, 385, Comand_Cr1, "MPが足りない！");
+                }
+                else {
+                    DrawFormatString(115, 385, Comand_Cr1, "ゆうしゃは%dかいふくした！", Heal);
+                }
+            }
+            else {
+                DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", slime.Monster_Name, Heal);
+            }
+            break;
+        case magic_2:
+            if (turn == 1) {
+                if (!canuse) {
+                    DrawFormatString(115, 385, Comand_Cr1, "MPが足りない！");
+                }
+                else {
+                    DrawFormatString(115, 385, Comand_Cr1, "%sに%dのダメージ！", slime.Monster_Name, damage);
+                }
+            }
+            else {
+
+                DrawFormatString(115, 385, Comand_Cr1, "ゆうしゃに%dのダメージ！", damage);
+            }
+            break;
+        }
+        if (Player::Player_Time != 0) {
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Player::Player_Time > 200) {
+            Player::Player_Time = 0;
+        }
+        
+
+}
+
+//道具
+void Battle::Draw_Message(int Comand, int turn,int item_num,bool canuse) {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            if (item_num >= 0) {
+                if (item[item_num].consumption) {
+                    Player::ItemBox.erase(Player::ItemBox.begin() + Game::select_item);
+                }
+            }
+            Game::comand = -1;
+            Game::select_item = -1;
+            select_item = 0;
+            Turn = 1 - Turn;
+                
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+
+
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    switch (item_num) {
+    case Item_Herb:
+        if (turn == 1) {
+            DrawFormatString(115, 385, Comand_Cr1, "ゆうしゃは%dかいふくした！", Heal);
+        }
+        else {
+            DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", slime.Monster_Name, Heal);
+        }
+        break;
+    default:
+        if (turn==1) {
+            DrawFormatString(115, 385, Comand_Cr1, "これは使えない！");
+        }
+        break;
+    }
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 200) {
+        Player::Player_Time = 0;
+    }
+}
 void Battle::check_speed() {
     if (Player::now_player_status.SPEED>slime.enemy_status.SPEED) {
         Turn = 1;
@@ -300,7 +521,7 @@ void Battle::check_speed() {
 
 int Battle::Enemy_AI() {
     std::random_device rand;
-    int comand = 0;
+    //int comand = 0;
     int attack=slime.Attack[0];
 
     return attack;
@@ -312,17 +533,33 @@ void Battle::Update_Player(int Comand) {
         if (Battle::Comand_RunAway() && !canRun) {
             canRun = true;
         }
-        
+        break;
     case Comand_Fight:
-        Cal_Damage(Turn,Comand);
+        Cal_Damage(Turn, Comand);
+        break;
+    case Comand_Magic:
+        if (Player::MP - magic[Game::select_magic].magic_mp < 0) {
+            canuse = false;
+        }
+        else {
+            Cal_Damage(Turn, Comand, Game::select_magic);
+        }
+        break;
+    
+    case Comand_Item:
+        Cal_Damage(Turn, Comand, Player::ItemBox[Game::select_item], item[Game::select_item].canuse);
+        break;
     }
+   
 }
+
 void Battle::Update_Monster(int Comand) {
     switch (Comand) {
     case Comand_Fight:
         Cal_Damage(Turn,Comand);
     }
 }
+
 void Battle::Cal_Damage(int turn,int Comand) {
     switch (Comand) {
     case Comand_Fight:
@@ -332,6 +569,7 @@ void Battle::Cal_Damage(int turn,int Comand) {
                 damage = 1;
             }
             Monster::now_HP = Monster::now_HP - damage;
+
         }
         else {         
             damage =  (slime.enemy_status.ATTACK - Player::now_player_status.DEFENSE);
@@ -343,12 +581,130 @@ void Battle::Cal_Damage(int turn,int Comand) {
     }
 }
 
+
+
+void Battle::Cal_Damage(int turn, int Comand, int Magic_Num) {
+    std::random_device rand;
+    switch(magic[Magic_Num].magic_type) {
+    case magic_Type_1:
+        if (turn == 1) {
+            Player::MP -= magic[Magic_Num].magic_mp;
+            if (Player::HP==Player::now_player_status.MAXHP) {
+                Heal = 0;
+            }
+            else {
+                Heal = magic[Magic_Num].magic_power + (rand() % Player::now_player_status.WISE);
+
+                if (Player::HP + Heal >= Player::now_player_status.MAXHP) {
+                    Heal = Player::now_player_status.MAXHP - Player::HP;
+                    Player::HP = Player::now_player_status.MAXHP;
+                    
+                }
+                else {
+                    Player::HP = Player::HP + Heal;
+                }
+            }
+        }
+        else {
+            Heal = 25 + (rand() % slime.enemy_status.WISE);
+            if (Monster::now_HP + Heal > slime.enemy_status.MAXHP) {
+                Monster::now_HP = slime.enemy_status.MAXHP;
+                Heal = slime.enemy_status.MAXHP - Monster::now_HP;
+            }
+            else {
+                Monster::now_HP = Monster::now_HP + Heal;
+            }
+        }
+        break;
+    case magic_Type_2:
+        if (turn == 1) {
+            Player::MP -= magic[Magic_Num].magic_mp;
+            damage = magic[Magic_Num].magic_power+(rand()%Player::now_player_status.WISE)-slime.enemy_status.MAGICDEF;
+            if (damage <= 0) {
+                damage = 1;
+            }
+            Monster::now_HP = Monster::now_HP - damage;
+        }
+        else {
+            damage = 5+(rand()%slime.enemy_status.WISE - Player::now_player_status.MAGICDEF);
+            if (damage <= 0) {
+                damage = 1;
+            }
+            Player::HP = Player::HP - damage;
+        }
+        break;
+    }
+}
+
+void Battle::Cal_Damage(int turn, int Comand, int item_Num,bool canuse) {
+    std::random_device rand;
+    switch (item_Num) {
+    case Item_Herb:
+        if (turn == 1) {
+            if (Player::HP == Player::now_player_status.MAXHP) {
+                Heal = 0;
+            }
+            else {
+                Heal = item[Item_Herb].power;
+
+                if (Player::HP + Heal >= Player::now_player_status.MAXHP) {
+                    Heal = Player::now_player_status.MAXHP - Player::HP;
+                    Player::HP = Player::now_player_status.MAXHP;
+
+                }
+                else {
+                    Player::HP = Player::HP + Heal;
+                }
+            }
+        }
+        else {
+            Heal = 30;
+            if (Monster::now_HP + Heal > slime.enemy_status.MAXHP) {
+                Monster::now_HP = slime.enemy_status.MAXHP;
+                Heal = slime.enemy_status.MAXHP - Monster::now_HP;
+            }
+            else {
+                Monster::now_HP = Monster::now_HP + Heal;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 bool Battle::Check_Battle_End() {
-    if (Monster::now_HP<=0||Player::HP<=0) {
-        return false;
+    if (Monster::now_HP <= 0 || Player::HP <= 0) {
+        return true;
     }
     if (canRun) {
-        return false;
+        return true;
     }
-    return true;
+    return false;
+}
+void Battle::Finish_Battle(int Comand) {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            Mode::GameMode = GameMode_FIELD;
+            Player::Exp = Player::Exp + slime.enemy_status.EXP;
+            Player::Gold = Player::Gold + slime.enemy_status.GOLD;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            Game::select_item = -1;
+            Game::select_magic = -1;
+        }
+
+    }
+
+    Draw_Battle();
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    DrawFormatString(115, 385, Comand_Cr1, "せんとうしゅうりょう");
+    DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", slime.enemy_status.EXP, slime.enemy_status.GOLD);
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 200) {
+        Player::Player_Time = 0;
+    }
+
 }

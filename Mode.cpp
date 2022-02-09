@@ -5,7 +5,11 @@
 #include "MAP.h"
 #include "Enum.h"
 #include "Battle.h"
+#include "NPC.h"
+unsigned static int TextBox_Cr1 = GetColor(255, 255, 255);
+unsigned static int TextBox_Cr2 = GetColor(0, 0, 0);
 
+int heal;
 
 int Mode::GameMode;
 char Mode::keyState[256];
@@ -16,9 +20,10 @@ int Mode::Select_Menu_Num;
 int Mode::Select_Dire_Num;
 int Mode::Select_Item;
 int Mode::Selected_Menu;
-
-
+int Mode::selected_NPC;
+bool Mode::show_message;
 void Mode::Initialize() {
+    heal = 0;
     Mode::GameMode=0;
     Mode::old_E_keyState=-1;
     Mode::old_RETURN_keyState=-1;
@@ -27,7 +32,9 @@ void Mode::Initialize() {
     Mode::Select_Dire_Num=0;
     Mode::Select_Item=0;
     Mode::Selected_Menu=-1;
+    show_message = false;
 }
+
 void Mode::Field_Mode() {
     Player::PlayerCount = (Player::PlayerCount + 1) % Game::FPS;
     int Next_X = Player::Player_X;
@@ -107,7 +114,9 @@ void Mode::Field_Mode() {
     if (Player:: Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
         //Player::Exp++;
         Mode::GameMode=Battle::Start_Battle(Player::PlayerCount);
-        Battle::Battle_Now = true;
+        if (Mode::GameMode==GameMode_BATTLE) {
+            Battle::Battle_Now = true;
+        }
     }
     Player::old_Player_X = Player::Player_X;
     Player::old_Player_Y = Player::Player_Y;
@@ -144,6 +153,7 @@ void Mode::Menu_Mode() {
 
         if (keyState[KEY_INPUT_RETURN] && !old_RETURN_keyState) {
             Selected_Menu = Select_Menu_Num;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
         if (keyState[KEY_INPUT_ESCAPE] && !old_ESCAPE_keyState) {
             Selected_Menu = -1;
@@ -299,35 +309,7 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
         }
 
 
-        DrawBox(450, 260, 590, 410, Menu_Cr1, TRUE);
-        DrawBox(460, 270, 580, 400, Menu_Cr2, TRUE);
-        for (int i = 0; i < Dire_MAX; i++) {
-            if (i == Select_Dire_Num) {
-                DrawBox(dire[i].x - 10, dire[i].y - 10, dire[i].x + 30, dire[i].y + 20, Menu_Cr1, TRUE);
-                DrawFormatString(dire[i].x, dire[i].y, Menu_Cr2, dire[i].Dire);
-            }
-            else {
-                DrawFormatString(dire[i].x, dire[i].y, Menu_Cr1, dire[i].Dire);
-            }
-        }
-        DrawBox(450, 10, 590, 250, Menu_Cr1, TRUE);
-        DrawBox(460, 20, 580, 240, Menu_Cr2, TRUE);
-        for (int i = 0; i < MenuType_MAX; i++) {
-            if (Select_Menu_Num == i) {
-                DrawBox(menu[i].x - 10, menu[i].y - 10, menu[i].x + 60, menu[i].y + 20, Menu_Cr1, TRUE);
-                DrawFormatString(menu[i].x, menu[i].y, Menu_Cr2, menu[i].name);
-            }
-            else {
-                DrawFormatString(menu[i].x, menu[i].y, Menu_Cr1, menu[i].name);
-            }
-        }
-        if (Player_Time != 0) {
-            Player_Time = Player_Time + Game::mFPS;
-        }
-        if (Player_Time > 200) {
-            Player_Time = 0;
-        }
-        Player::Player_Time = Player_Time;
+
         break;
 
     case MenuType_SEARCH:
@@ -360,9 +342,9 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                 switch (Select_Dire_Num)
                 {
                 case Dire_N:
-                    if (MAP::map[Player::Player_Y - 1][Player::Player_X] == CELL_TYPE_TRESURE) {
+                    if (MAP::map[Player::Player_Y - 1][Player::Player_X] == CELL_TYPE_TREASURE) {
                         for (int i = 0; i < TRESURE_MAX; i++) {
-                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X == tresure[i].x && Player::Player_Y-1 == tresure[i].y) {
+                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X == tresure[i].x && Player::Player_Y - 1 == tresure[i].y) {
                                 Player::ItemBox.push_back(tresure[i].ItemNum);
                                 GameMode = GameMode_FIELD;
                             }
@@ -375,9 +357,9 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                     }
 
                 case Dire_E:
-                    if (MAP::map[Player::Player_Y][Player::Player_X + 1] == CELL_TYPE_TRESURE) {
-                        for (int i = 0; i < TRESURE_MAX;i++) {
-                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X+1==tresure[i].x&&Player::Player_Y==tresure[i].y) {
+                    if (MAP::map[Player::Player_Y][Player::Player_X + 1] == CELL_TYPE_TREASURE) {
+                        for (int i = 0; i < TRESURE_MAX; i++) {
+                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X + 1 == tresure[i].x && Player::Player_Y == tresure[i].y) {
                                 Player::ItemBox.push_back(tresure[i].ItemNum);
                                 GameMode = GameMode_FIELD;
                             }
@@ -389,9 +371,9 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                     }
 
                 case Dire_S:
-                    if (MAP::map[Player::Player_Y + 1][Player::Player_X] == CELL_TYPE_TRESURE) {
+                    if (MAP::map[Player::Player_Y + 1][Player::Player_X] == CELL_TYPE_TREASURE) {
                         for (int i = 0; i < TRESURE_MAX; i++) {
-                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X == tresure[i].x && Player::Player_Y+1 == tresure[i].y) {
+                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X == tresure[i].x && Player::Player_Y + 1 == tresure[i].y) {
                                 Player::ItemBox.push_back(tresure[i].ItemNum);
                                 GameMode = GameMode_FIELD;
                             }
@@ -403,9 +385,9 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                     }
 
                 case Dire_W:
-                    if (MAP::map[Player::Player_Y][Player::Player_X - 1] == CELL_TYPE_TRESURE) {
+                    if (MAP::map[Player::Player_Y][Player::Player_X - 1] == CELL_TYPE_TREASURE) {
                         for (int i = 0; i < TRESURE_MAX; i++) {
-                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X-1 == tresure[i].x && Player::Player_Y == tresure[i].y) {
+                            if (MAP::File_Name == tresure[i].map_name && Player::Player_X - 1 == tresure[i].x && Player::Player_Y == tresure[i].y) {
                                 Player::ItemBox.push_back(tresure[i].ItemNum);
                                 GameMode = GameMode_FIELD;
                             }
@@ -420,46 +402,152 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                 Select_Dire_Num = 0;
             }
         }
-
-
-
-        DrawBox(450, 260, 590, 410, Menu_Cr1, TRUE);
-        DrawBox(460, 270, 580, 400, Menu_Cr2, TRUE);
-        for (int i = 0; i < Dire_MAX; i++) {
-            if (i == Select_Dire_Num) {
-                DrawBox(dire[i].x - 10, dire[i].y - 10, dire[i].x + 30, dire[i].y + 20, Menu_Cr1, TRUE);
-                DrawFormatString(dire[i].x, dire[i].y, Menu_Cr2, dire[i].Dire);
-            }
-            else {
-                DrawFormatString(dire[i].x, dire[i].y, Menu_Cr1, dire[i].Dire);
-            }
-        }
-        DrawBox(450, 10, 590, 250, Menu_Cr1, TRUE);
-        DrawBox(460, 20, 580, 240, Menu_Cr2, TRUE);
-        for (int i = 0; i < MenuType_MAX; i++) {
-            if (Select_Menu_Num == i) {
-                DrawBox(menu[i].x - 10, menu[i].y - 10, menu[i].x + 80, menu[i].y + 20, Menu_Cr1, TRUE);
-                DrawFormatString(menu[i].x, menu[i].y, Menu_Cr2, menu[i].name);
-            }
-            else {
-                DrawFormatString(menu[i].x, menu[i].y, Menu_Cr1, menu[i].name);
-            }
-        }
-        if (Player_Time != 0) {
-            Player_Time = Player_Time + Game::mFPS;
-        }
-        if (Player_Time > 200) {
-            Player_Time = 0;
-        }
-        Player::Player_Time = Player_Time;
         break;
+    case MenuType_Talk:
+        if (Player_Time == 0) {
+
+            if (keyState[KEY_INPUT_W]) {
+                Select_Dire_Num = Dire_N;
+            }
+            if (keyState[KEY_INPUT_D]) {
+                Select_Dire_Num = Dire_E;
+            }
+            if (keyState[KEY_INPUT_S]) {
+                Select_Dire_Num = Dire_S;
+            }
+            if (keyState[KEY_INPUT_A]) {
+                Select_Dire_Num = Dire_W;
+            }
+            if (keyState[KEY_INPUT_ESCAPE] && !old_ESCAPE_keyState) {
+                Selected_Menu = -1;
+                Select_Dire_Num = 0;
+
+            }
+
+
+            if (keyState[KEY_INPUT_RETURN] && !old_RETURN_keyState) {
+                Selected_Menu = FALSE;
+                Select_Menu_Num = 0;
+                
+
+                switch (Select_Dire_Num)
+                {
+                case Dire_N:
+                    if (!MAP::canmove[Player::Player_Y - 1][Player::Player_X]) {
+                        for (int i = 0; i < NPC::npc_num.size();i++) {
+                            if (Player::Player_Y - 1==npc[NPC::npc_num[i]].y&& Player::Player_X==npc[NPC::npc_num[i]].x) {
+                                Game::Talk_now = true;
+                                selected_NPC = NPC::npc_num[i];
+                                NPC::Talk_Count = 0;
+                            }
+                        }
+
+                    }
+                    else {
+                        GameMode = GameMode_FIELD;
+                        Selected_Menu = -1;
+                        break;
+                    }
+                    break;
+                case Dire_E:
+                    if (!MAP::canmove[Player::Player_Y][Player::Player_X+1]) {
+                        for (int i = 0; i < NPC::npc_num.size(); i++) {
+                            if (Player::Player_Y== npc[NPC::npc_num[i]].y && Player::Player_X+1 == npc[NPC::npc_num[i]].x) {
+                                Game::Talk_now = true;
+                                selected_NPC = NPC::npc_num[i];
+                                NPC::Talk_Count = 0;
+                            }
+                        }
+
+                    }
+                    else {
+                        Selected_Menu = -1;
+                        GameMode = GameMode_FIELD;
+                        break;
+                    }
+                    break;
+                case Dire_S:
+                    if (!MAP::canmove[Player::Player_Y + 1][Player::Player_X]) {
+                        for (int i = 0; i < NPC::npc_num.size(); i++) {
+                            if (Player::Player_Y + 1 == npc[NPC::npc_num[i]].y && Player::Player_X == npc[NPC::npc_num[i]].x) {
+                                Game::Talk_now = true;
+                                selected_NPC = NPC::npc_num[i];
+                                NPC::Talk_Count = 0;
+                            }
+                        }
+
+                    }
+                    else {
+                        GameMode = GameMode_FIELD;
+                        Selected_Menu = -1;
+                        break;
+                    }
+                    break;
+
+                case Dire_W:
+                    if (!MAP::canmove[Player::Player_Y ][Player::Player_X-1]) {
+                        for (int i = 0; i < NPC::npc_num.size(); i++) {
+                            if (Player::Player_Y  == npc[NPC::npc_num[i]].y && Player::Player_X-1 == npc[NPC::npc_num[i]].x) {
+                                Game::Talk_now = true;
+                                selected_NPC = NPC::npc_num[i];
+                                NPC::Talk_Count = 0;
+                            }
+                        }
+
+                    }
+                    else {
+                        GameMode = GameMode_FIELD;
+                        Selected_Menu = -1;
+                        break;
+                    }
+
+                }
+                Select_Dire_Num = 0;
+            }
+        }
+        break;
+
     }
+
+
+    DrawBox(450, 260, 590, 410, Menu_Cr1, TRUE);
+    DrawBox(460, 270, 580, 400, Menu_Cr2, TRUE);
+    for (int i = 0; i < Dire_MAX; i++) {
+        if (i == Select_Dire_Num) {
+            DrawBox(dire[i].x - 10, dire[i].y - 10, dire[i].x + 30, dire[i].y + 20, Menu_Cr1, TRUE);
+            DrawFormatString(dire[i].x, dire[i].y, Menu_Cr2, dire[i].Dire);
+        }
+        else {
+            DrawFormatString(dire[i].x, dire[i].y, Menu_Cr1, dire[i].Dire);
+        }
+    }
+    DrawBox(450, 10, 590, 250, Menu_Cr1, TRUE);
+    DrawBox(460, 20, 580, 240, Menu_Cr2, TRUE);
+    for (int i = 0; i < MenuType_MAX; i++) {
+        if (Select_Menu_Num == i) {
+            DrawBox(menu[i].x - 10, menu[i].y - 10, menu[i].x + 80, menu[i].y + 20, Menu_Cr1, TRUE);
+            DrawFormatString(menu[i].x, menu[i].y, Menu_Cr2, menu[i].name);
+        }
+        else {
+            DrawFormatString(menu[i].x, menu[i].y, Menu_Cr1, menu[i].name);
+        }
+    }
+    if (Player_Time != 0) {
+        Player_Time = Player_Time + Game::mFPS;
+    }
+    if (Player_Time > 200) {
+        Player_Time = 0;
+    }
+    Player::Player_Time = Player_Time;
+
+
+
 }
 
 void Mode::Item_Select() {
     unsigned int Menu_Cr1 = GetColor(255, 255, 255);
     unsigned int Menu_Cr2 = GetColor(0, 0, 0);
-    old_RETURN_keyState = keyState[KEY_INPUT_RETURN];
+    
     if (Player::Player_Time == 0) {
 
         if (keyState[KEY_INPUT_S]) {
@@ -472,7 +560,14 @@ void Mode::Item_Select() {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
         if (keyState[KEY_INPUT_RETURN] && !old_RETURN_keyState) {
-
+            if(item[Player::ItemBox[Select_Item]].canuse){
+                Use_Item(Player::ItemBox[Select_Item]);
+                show_message = true;
+            }
+            else {
+                show_message = true;
+            }
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
         if (keyState[KEY_INPUT_ESCAPE]) {
             Selected_Menu = -1;
@@ -536,14 +631,17 @@ void Mode::Status_Show() {
     }
     DrawBox(200, 50, 400, 400, Menu_Cr1, TRUE);
     DrawBox(210, 60, 390, 390, Menu_Cr2, TRUE);
-    
+    DrawBox(50, 50, 150, 300, Menu_Cr1, TRUE);
+    DrawBox(60, 60, 140, 290, Menu_Cr2, TRUE);
     int* p;
     p = &(Player::now_player_status.MAXHP);
     for (int i = 0; i < STATUS_MAX; i++) {
         DrawFormatString(220, 65 + i * 30, Menu_Cr1, status[i].status_name);
         DrawFormatString(350, 65 + i * 30, Menu_Cr1, "%d", *(p + i));
     }
-
+    for (int i = 0; i < Player::MagicBox.size();i++) {
+        DrawFormatString(70,65+i*30,Menu_Cr1,magic[Player::MagicBox[i]].magic_name);
+    }
 
     /*
     DrawFormatString(350, 65 + 0 * 30, Menu_Cr1, "%d", player_status[Player_Lv - 1].MAXHP);
@@ -568,6 +666,52 @@ void Mode::Status_Show() {
         else {
             DrawFormatString(menu[i].x, menu[i].y, Menu_Cr1, menu[i].name);
         }
+    }
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 200) {
+        Player::Player_Time = 0;
+    }
+}
+
+void Mode::Use_Item(int item_num) {
+    switch (item_num) {
+    case Item_Herb:
+        if (Player::now_player_status.MAXHP>=Player::HP + 30) {
+            Player::HP = Player::HP + 30;
+            heal = 30;
+        }
+        else {
+            heal = Player::now_player_status.MAXHP - Player::HP;
+            Player::HP = Player::now_player_status.MAXHP;
+        }
+        break;
+    }
+}
+
+void Mode::Draw_Message(int item_num) {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            heal = 0;
+            Mode::GameMode = GameMode_FIELD;
+            Mode::Selected_Menu = -1;
+            Mode::Select_Menu_Num = 0;
+            Mode::Select_Item = 0;
+            Mode::show_message = false;
+            Player::ItemBox.erase(Player::ItemBox.begin()+Select_Item);
+            
+        }
+    }
+    if (item[item_num].canuse) {
+        DrawBox(100, 370, 500, 500, TextBox_Cr1, TRUE);
+        DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
+        DrawFormatString(120, 385, TextBox_Cr1, "‚ä‚¤‚µ‚á‚Í%d‚©‚¢‚Ó‚­‚µ‚½",heal);
+    }
+    else {
+        DrawBox(100, 370, 500, 500, TextBox_Cr1, TRUE);
+        DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
+        DrawFormatString(120, 385, TextBox_Cr1, "‚±‚ÌƒAƒCƒeƒ€‚Í‚Â‚©‚¦‚È‚¢");
     }
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;

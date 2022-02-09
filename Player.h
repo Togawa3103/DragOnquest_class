@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-
+#include "Magic.h"
 typedef struct {
 	int MAXHP;
 	int HP;
@@ -13,6 +13,7 @@ typedef struct {
 	int MAGICDEF;
 	int GOLD;
 	int EXP;
+	std::vector<int> Learn_Magic;
 }PLAYER_STATUS;
 
 typedef struct {
@@ -20,10 +21,10 @@ typedef struct {
 }STATUS;
 
 static PLAYER_STATUS player_status[] = {
-	{20,-1,0,-1,5,5,5,5,5,-1,-1},//Lv1
-	{5,-1,5,-1,3,3,3,3,3,-1,-1},//Lv2
-	{5,-1,5,-1,11,15,5,5,3,-1,-1},//Lv3
-	{5,-1,5,-1,14,13,13,13,5,-1,-1},//Lv4
+	{20,-1,0,-1,5,5,5,5,5,-1,-1,{}},//Lv1
+	{5,-1,5,-1,3,3,3,3,3,-1,-1,{magic_2,magic_1}},//Lv2
+	{5,-1,5,-1,11,15,5,5,3,-1,-1,{magic_3} },//Lv3
+	{5,-1,5,-1,14,13,13,13,5,-1,-1,{magic_4}},//Lv4
 };
 
 static STATUS status[] = {
@@ -73,6 +74,7 @@ public:
 	static int Gold;
 	static int Exp;
 	static std::vector<int> ItemBox; //‚à‚¿‚à‚Ì
+	static std::vector<int> MagicBox;
 	static bool Lv_Up;
 	static bool haveKey;
 	

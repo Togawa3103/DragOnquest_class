@@ -1,9 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#ifdef GLOBAL_VALUE_DEFINE
-#define GLOBAL
-#else
-#define GLOBAL extern
-#endif
+
 #include <windows.h>
 #include "DxLib.h"
 #include "Game.h"
@@ -11,6 +7,8 @@
 #include "MAP.h"
 #include "Mode.h"
 #include "Battle.h"
+#include "NPC.h"
+
 
 int Game::FPS = 144;
 float Game::mFPS = 1000.f / FPS;
@@ -19,8 +17,10 @@ clock_t Game::end;
 clock_t Game::now;
 double Game::looptime;
 int Game::comand = -1;
+int Game::select_magic=-1;
+int Game::select_item = -1;
 int old_comand=-1;
-
+bool Game::Talk_now = false;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     ChangeWindowMode(TRUE);
@@ -74,11 +74,26 @@ void Game::Game_Main() {
                 Battle::Initialize();
             }
             if (Battle::Battle_Now) {
+                
                 Battle::Draw_Battle();
                 if (comand < 0 && Battle::Turn == 1) {
                     comand = Battle::Set_Comand();
-                    if (comand>=0) {
+                    if (comand == Comand_Run||comand==Comand_Fight) {
                         Battle::Update_Player(comand);
+                    }
+
+                }
+                else if (select_magic < 0 && comand == Comand_Magic && Battle::Turn == 1) {
+                    select_magic = Battle::Select_Magic();
+                    if (select_magic >= 0) {
+                        Battle::Update_Player(comand);
+                    }
+                }
+                else if (select_item < 0&&comand==Comand_Item&&Battle::Turn==1) {
+                    select_item = Battle::Select_Item();
+                    if (select_item >= 0) {
+                        
+                       Battle::Update_Player(comand);
                     }
                 }
                 else  if(comand<0&&Battle::Turn==0){
@@ -87,13 +102,26 @@ void Game::Game_Main() {
                     Battle::Update_Monster(comand);
 
                 }
-                else if (comand>=0) {  
-                    //Battle::Update_Battle(comand);
-                    Battle::Draw_Message(comand, Battle::Turn);
-                    //Battle::Turn_Swap();
+                else if (comand>=0) {
+                    switch (comand) {
+                    case Comand_Run:
+                        Battle::Draw_Message(comand, Battle::Turn,Battle::canRun);
+                        break;
+                    case Comand_Fight:
+                        //Battle::Update_Battle(comand);
+                        Battle::Draw_Message(comand, Battle::Turn);
+                        //Battle::Turn_Swap();
+                        break;
+                    case Comand_Magic:
+                        Battle::Draw_Message(comand, Battle::Turn,select_magic);
+                        break;
+                    case Comand_Item:
+                        Battle::Draw_Message(comand, Battle::Turn, Player::ItemBox[select_item],item[Player::ItemBox[select_item]].canuse);
+                        break;
+                    }
                     old_comand = comand;
                 }
-                if (!Battle::Check_Battle_End()) {
+                if (Battle::Check_Battle_End()) {
                     Battle::Battle_Now = false;
                 }
             }
@@ -112,9 +140,28 @@ void Game::Game_Main() {
             }
             else if (Mode::Selected_Menu==MenuType_SEARCH) {
                 Mode::Menu_DireSelect(Mode::Selected_Menu);
+            }else if(Mode::Selected_Menu==MenuType_Talk) {
+                if (!Talk_now) {
+                    Mode::Menu_DireSelect(Mode::Selected_Menu);
+                    NPC::Yes_No = 0;
+                    NPC::finish_text = 0;
+                }
+                else if (Talk_now) {
+                    if (npc[Mode::selected_NPC].text[NPC::Talk_Count]>=0) {
+                        NPC::Draw_Talk(Mode::selected_NPC);
+                    }
+                    else {
+                        NPC::Draw_Question(Mode::selected_NPC);
+                    }
+                }
             }
-            else if (Mode::Selected_Menu==MenuType_Item) {
-                Mode::Item_Select();
+            else if (Mode::Selected_Menu == MenuType_Item) {
+                if (!Mode::show_message) {
+                    Mode::Item_Select();
+                }
+                else if(Mode::show_message){
+                    Mode::Draw_Message(Player::ItemBox[Mode::Select_Item]);
+                }
             }
             else if (Mode::Selected_Menu==MenuType_STATUS) {
                 Mode::Status_Show();
