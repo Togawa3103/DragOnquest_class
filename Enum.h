@@ -20,6 +20,7 @@ enum {
     Item_CupperSword,//"Ç«Ç§ÇÃÇ¬ÇÈÇ¨"
     Item_Meil,//"Ç©ÇÌÇÃÇÊÇÎÇ¢"
     Item_unchi,//"Ç§ÇÒÇø"
+    Item_Orb,  //ÉIÅ[Éu
     Item_Num_Max,
 };
 
@@ -30,9 +31,11 @@ typedef struct {
     int ItemNum;
 }TRESURE;
 
+
 static TRESURE tresure[] = {
     {"map_test_door.bmp",7,4,Item_Key},
 };
+
 
 enum {
     TRESURE_KingRoom_1,//KEY

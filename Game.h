@@ -1,4 +1,5 @@
 #include <time.h>
+#include "DxLib.h"
 
 
 class Game {
@@ -15,5 +16,8 @@ public:
 	static clock_t now;
 	static double looptime;
 	static int comand;
+	static int select_magic;
+	static int select_item;
+	static bool Talk_now;
 	
 };

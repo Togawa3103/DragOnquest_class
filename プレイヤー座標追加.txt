@@ -1,0 +1,91 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include"DxLib.h"
+#include <stdio.h>
+#include <windows.h>
+#define MAP_HEIGHT 10
+#define MAP_WIDTH 12
+
+int cells[MAP_HEIGHT][MAP_WIDTH];
+
+enum {
+    CELL_TYPE_WALL,
+    CELL_TYPE_FLOOR,
+    CELL_TYPE_PLAYER,
+    CELL_TYPE_MAX,
+};
+
+typedef struct {
+    unsigned char b, g, r;
+}BGR;
+
+typedef struct {
+    BGR bgr;
+}CELLDESC;
+
+CELLDESC cellDescs[] = {
+    {0,0,255},//CELL_TYPE_WALL
+    {0,255,0},//CELL_TYPE_FLOOR
+    {255,0,0},//CELL_TYPE_PLAYER
+};
+
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+    ChangeWindowMode(TRUE); 
+    DxLib_Init();   // DXライブラリ初期化処理
+
+    FILE* pFile = fopen("map_test.bmp","rb");
+    if (pFile==NULL) {
+        DxLib_End();
+    }
+    int player_X = 4;
+    int player_Y = 4;
+    BITMAPFILEHEADER bmfh;
+    fread(&bmfh,sizeof BITMAPFILEHEADER,1,pFile);
+    BITMAPINFOHEADER bmih;
+    fread(&bmih,sizeof BITMAPINFOHEADER,1,pFile);
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+
+    for (int x = 0; x < MAP_WIDTH;x++) {
+        
+            BGR bgr;
+            fread(&bgr,sizeof BGR,1,pFile);
+            int cellType = -1;
+            ClearDrawScreen();
+            for (int i = 0; i < CELL_TYPE_MAX;i++) {
+                if ((bgr.b==cellDescs[i].bgr.b)&& (bgr.g == cellDescs[i].bgr.g)&& (bgr.r == cellDescs[i].bgr.r)){
+                    unsigned int Cr = GetColor(255, 255, 255);
+                    DrawFormatString(50, 50, Cr, "%d %d", y, x);
+                    DrawFormatString(100, 50, Cr, "%d %d %d", bgr.b, bgr.g, bgr.r);
+                    //WaitKey();
+                    cellType = i;
+                }
+            }
+            if (cellType==-1) {
+                unsigned int Cr = GetColor(255,255,255);
+                DrawFormatString(50,50,Cr,"%d %d",y,x);
+                DrawFormatString(100, 50, Cr, "%d %d %d", bgr.b, bgr.g,bgr.r);
+                WaitKey();
+                DxLib_End();
+            }
+            cells[y][x] = cellType;
+        }
+    }
+    ClearDrawScreen();
+    cells[player_Y][player_X] = CELL_TYPE_PLAYER;
+    for (int i = 0; i < MAP_HEIGHT;i++) {
+        for (int j = 0; j < MAP_WIDTH;j++) {
+            unsigned int Cr =GetColor(cellDescs[cells[i][j]].bgr.r, cellDescs[cells[i][j]].bgr.g, cellDescs[cells[i][j]].bgr.b);
+            DrawFormatString(j*10,i*10,Cr,"%d",cells[i][j]);
+        }
+    }
+    WaitKey();
+    for (int i = 0; i < MAP_HEIGHT;i++) {
+        for (int j = 0; j < MAP_WIDTH;j++) {
+            unsigned int Cr = GetColor(cellDescs[cells[i][j]].bgr.r, cellDescs[cells[i][j]].bgr.g, cellDescs[cells[i][j]].bgr.b);
+            DrawBox(j*50,i*50,j*50+50,i*50+50,Cr,TRUE);
+        }
+    }
+
+    WaitKey();      // キー入力待ち
+    DxLib_End();    // DXライブラリ終了処理
+    return 0;
+}
