@@ -14,6 +14,7 @@ int Battle::Select_Comand;
 bool Battle::Battle_Now=false;
 bool Battle:: canRun = false;
 int Battle::Turn;
+bool Battle::effect = false;
 unsigned int Comand_Cr1 = GetColor(255, 255, 255);
 unsigned int Comand_Cr2 = GetColor(0, 0, 0);
 
@@ -37,6 +38,7 @@ void Battle::Initialize() {
     canRun = false;
     Game::comand = -1;
     Battle::check_speed();
+    effect = false;
 }
 void Battle::Draw_Battle() {
     MAP::Draw_FIELD();
@@ -100,7 +102,7 @@ int Battle::Set_Comand() {
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
-    if (Player::Player_Time > 200) {
+    if (Player::Player_Time > 300) {
         Player::Player_Time = 0;
     }
 
@@ -172,7 +174,7 @@ int Battle::Select_Magic() {
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
-    if (Player::Player_Time > 200) {
+    if (Player::Player_Time > 300) {
         Player::Player_Time = 0;
     }
     
@@ -301,7 +303,7 @@ int Battle::Select_Item() {
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
-    if (Player::Player_Time > 200) {
+    if (Player::Player_Time > 300) {
         Player::Player_Time = 0;
     }
     return -1;
@@ -325,6 +327,7 @@ void Battle::Draw_Message(int Comand, int turn,bool canrun) {
             if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
                 Game::comand = -1;
                 Turn = 1 - Turn;
+                Battle::Check_Battle_End();
                 Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
 
@@ -345,8 +348,9 @@ void Battle::Draw_Message(int Comand, int turn,bool canrun) {
         if (Player::Player_Time != 0) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
-        if (Player::Player_Time > 200) {
+        if (Player::Player_Time > 300) {
             Player::Player_Time = 0;
+            effect = false;
         }
        
 }
@@ -357,6 +361,7 @@ void Battle::Draw_Message(int Comand,int turn) {
             if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
                  Game::comand = -1;
                  Turn = 1 - Turn;
+                 Battle::Check_Battle_End();
                  Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
 
@@ -374,8 +379,9 @@ void Battle::Draw_Message(int Comand,int turn) {
         if(Player::Player_Time != 0) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
-        if (Player::Player_Time > 200) {
+        if (Player::Player_Time > 300) {
             Player::Player_Time = 0;
+            effect = false;
         }
         
 
@@ -389,6 +395,7 @@ void Battle::Draw_Message(int Comand, int turn, int magic_num) {
                 Game::select_magic = -1;
                 select_magic = 0;
                 Turn = 1 - Turn;
+                Battle::Check_Battle_End();
                 Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
 
@@ -429,8 +436,9 @@ void Battle::Draw_Message(int Comand, int turn, int magic_num) {
         if (Player::Player_Time != 0) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
-        if (Player::Player_Time > 200) {
+        if (Player::Player_Time > 300) {
             Player::Player_Time = 0;
+            effect = false;
         }
         
 
@@ -449,7 +457,7 @@ void Battle::Draw_Message(int Comand, int turn,int item_num,bool canuse) {
             Game::select_item = -1;
             select_item = 0;
             Turn = 1 - Turn;
-                
+            Battle::Check_Battle_End();
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
 
@@ -476,8 +484,9 @@ void Battle::Draw_Message(int Comand, int turn,int item_num,bool canuse) {
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
-    if (Player::Player_Time > 200) {
+    if (Player::Player_Time > 300) {
         Player::Player_Time = 0;
+        effect = false;
     }
 }
 void Battle::check_speed() {
@@ -536,6 +545,7 @@ void Battle::Update_Player(int Comand) {
         break;
     case Comand_Fight:
         Cal_Damage(Turn, Comand);
+        effect = true;
         break;
     case Comand_Magic:
         if (Player::MP - magic[Game::select_magic].magic_mp < 0) {
@@ -543,13 +553,16 @@ void Battle::Update_Player(int Comand) {
         }
         else {
             Cal_Damage(Turn, Comand, Game::select_magic);
+            if(magic[Game::select_magic].magic_type==magic_Type_2)effect = true;
         }
         break;
     
     case Comand_Item:
         Cal_Damage(Turn, Comand, Player::ItemBox[Game::select_item], item[Game::select_item].canuse);
+        //effect = true;
         break;
     }
+    
    
 }
 
@@ -673,14 +686,14 @@ void Battle::Cal_Damage(int turn, int Comand, int item_Num,bool canuse) {
     }
 }
 
-bool Battle::Check_Battle_End() {
+void Battle::Check_Battle_End() {
     if (Monster::now_HP <= 0 || Player::HP <= 0) {
-        return true;
+        Battle_Now = false;
     }
     if (canRun) {
-        return true;
+        Battle_Now = false;
     }
-    return false;
+    
 }
 void Battle::Finish_Battle(int Comand) {
     if (Player::Player_Time == 0) {
@@ -703,8 +716,30 @@ void Battle::Finish_Battle(int Comand) {
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
-    if (Player::Player_Time > 200) {
+    if (Player::Player_Time > 300) {
         Player::Player_Time = 0;
     }
 
+}
+
+void Battle::Effect(int turn, int Comand, int sub_Num) {
+    
+    switch (Comand) {
+    case Comand_Run:
+        break;
+    
+    default:
+        if (effect&&turn ==1&&(Player::Player_Time/100)%2==0) {
+            MAP::Draw_FIELD();
+            DrawBox(150, 50, 450, 360, Comand_Cr1, TRUE);
+            DrawBox(160, 60, 440, 350, Comand_Cr2, TRUE);
+            //DrawExtendGraph(225, 150, 375, 300, Battle::Monster_graph, true);
+
+            DrawBox(10, 10, 100, 100, Comand_Cr1, TRUE);
+            DrawBox(20, 20, 90, 90, Comand_Cr2, TRUE);
+            DrawFormatString(30, 30, Comand_Cr1, "HP:%d", Player::HP);
+            DrawFormatString(30, 60, Comand_Cr1, "MP:%d", Player::MP);
+        }
+        break;
+    }
 }

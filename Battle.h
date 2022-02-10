@@ -49,7 +49,9 @@ public:
 	static void Cal_Damage(int turn,int Comand);
 	static void Cal_Damage(int turn, int Comand, int Magic_Num);
 	static void Cal_Damage(int turn, int Comand, int item_Num,bool canuse);
-	static bool Check_Battle_End();
+	static void Check_Battle_End();
+
+	static void Effect(int turn,int Comand,int sub_Num);
 
 	static int Turn;//0:Enemy 1:Player
 	static bool Battle_Now;
@@ -57,5 +59,5 @@ public:
 	static int Monster_Num;
 	static int Monster_graph;
 	static int Select_Comand;
-	
+	static bool effect;
 };

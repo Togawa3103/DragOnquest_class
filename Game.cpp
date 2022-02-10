@@ -72,6 +72,7 @@ void Game::Game_Main() {
             
             if (Battle::Monster_Num < 0) {
                 Battle::Initialize();
+                
             }
             if (Battle::Battle_Now) {
                 
@@ -79,6 +80,7 @@ void Game::Game_Main() {
                 if (comand < 0 && Battle::Turn == 1) {
                     comand = Battle::Set_Comand();
                     if (comand == Comand_Run||comand==Comand_Fight) {
+                        
                         Battle::Update_Player(comand);
                     }
 
@@ -86,13 +88,14 @@ void Game::Game_Main() {
                 else if (select_magic < 0 && comand == Comand_Magic && Battle::Turn == 1) {
                     select_magic = Battle::Select_Magic();
                     if (select_magic >= 0) {
+                        
                         Battle::Update_Player(comand);
                     }
                 }
                 else if (select_item < 0&&comand==Comand_Item&&Battle::Turn==1) {
                     select_item = Battle::Select_Item();
                     if (select_item >= 0) {
-                        
+                       
                        Battle::Update_Player(comand);
                     }
                 }
@@ -109,21 +112,24 @@ void Game::Game_Main() {
                         break;
                     case Comand_Fight:
                         //Battle::Update_Battle(comand);
+                        Battle::Effect(Battle::Turn, comand, -1);
                         Battle::Draw_Message(comand, Battle::Turn);
                         //Battle::Turn_Swap();
                         break;
                     case Comand_Magic:
+                        Battle::Effect(Battle::Turn, comand, select_magic);
                         Battle::Draw_Message(comand, Battle::Turn,select_magic);
                         break;
                     case Comand_Item:
-                        Battle::Draw_Message(comand, Battle::Turn, Player::ItemBox[select_item],item[Player::ItemBox[select_item]].canuse);
+                        
+                        Battle::Effect(Battle::Turn, comand, Player::ItemBox[select_item]);
+                        
+                        Battle::Draw_Message(comand, Battle::Turn, Player::ItemBox[select_item], item[Player::ItemBox[select_item]].canuse);
                         break;
                     }
                     old_comand = comand;
                 }
-                if (Battle::Check_Battle_End()) {
-                    Battle::Battle_Now = false;
-                }
+                
             }
             else {
                 Battle::Finish_Battle(old_comand);
