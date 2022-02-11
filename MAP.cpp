@@ -3,6 +3,7 @@
 #include "MAP.h"
 #include "Player.h"
 #include "Game.h"
+#include "Sound.h"
 #include "NPC.h"
 int MAP::MAP_Num = 0;
 const char *MAP::File_Name = map_data[MAP_Num].Map_Name;
@@ -81,6 +82,7 @@ void MAP::Draw_FIELD(){
 void MAP::Load_MAP(int MAP_Num) {
     MAP::Initialize();
     MAP::File_Name = map_data[MAP_Num].Map_Name;
+    Sound::LoadSound(map_data[MAP_Num].BGM_Name);
     FILE* pFile = fopen(MAP::File_Name, "rb");
     if (pFile == NULL) {
         DxLib_End();
@@ -125,4 +127,5 @@ void MAP::Load_MAP(int MAP_Num) {
         graphDescs[i].Graph_Handle = LoadGraph(graphDescs[i].Graph_Name);
     }
     NPC::Load_NPC(MAP::MAP_Num);
+    Sound::PlayBGMSound(Sound::SHandle);
 }

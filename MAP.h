@@ -20,13 +20,14 @@ typedef struct {
 
 typedef struct {
 	const char* Map_Name;
+	const char* BGM_Name;
 	std::vector<MAP_INFO> map_info;
 	std::vector<int > NPC_Num;
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp",{{1,6,8}},{0}},
-	{"map_castle.bmp",{{0,19,17}},{}},
+	{"map_test_door.bmp","castle.mp3",{{1,6,8}},{0}},
+	{"map_castle.bmp","castle.mp3",{{0,19,17}},{}},
 };
 
 typedef struct {
