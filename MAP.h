@@ -11,6 +11,7 @@
 enum {
 	MAP_KINGROOM,
 	MAP_CASTLE,
+	MAP_MAX,
 };
 typedef struct {
 	int toMap_Num;
@@ -100,6 +101,7 @@ public:
 	static int Move_Count_X;
 	static int Move_Count_Y;
 	static int MAP_Num;
+	static int map_bgm[MAP_MAX];
 
 	MAP();
 	~MAP();

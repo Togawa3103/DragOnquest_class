@@ -1,6 +1,19 @@
 #include <time.h>
 #include "DxLib.h"
 
+enum {
+	StartMenu_Start,
+	StartMenu_Continue,
+	StartMenu_Max,
+};
+typedef struct {
+	const char* startmenu_name;
+}StartMenu;
+
+static StartMenu start[] = {
+	{"‚Í‚¶‚ß‚©‚ç"},
+	{"‚Â‚Ã‚«‚©‚ç"},
+};
 
 class Game {
 public:
@@ -8,6 +21,7 @@ public:
 	~Game();
 	static void Initialize();
 	void Game_Main();
+	int Game_Start();
 public:
 	static int Game_Mode;
 	static int FPS;

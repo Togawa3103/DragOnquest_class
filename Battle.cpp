@@ -6,6 +6,7 @@
 #include "MAP.h"
 #include "Monster.h"
 #include "Enum.h"
+#include"Sound.h"
 #include<random>
 
 int Battle::Monster_Num = -1;
@@ -27,7 +28,7 @@ int Heal = 0;
 int select_magic = 0;
 int select_item = 0;
 bool canuse = true;
-
+int bgm;
 void Battle::Initialize() {
     Battle::Monster_Num= Monster::set_Monster(MAP::MAP_Num);
     Battle::Monster_graph = LoadGraph(slime.Monster_Graph_Name);
@@ -39,6 +40,11 @@ void Battle::Initialize() {
     Game::comand = -1;
     Battle::check_speed();
     effect = false;
+   
+    bgm = LoadSoundMem("battle.mp3");
+    ChangeVolumeSoundMem(80, bgm);
+    PlaySoundMem(bgm,DX_PLAYTYPE_LOOP);
+
 }
 void Battle::Draw_Battle() {
     MAP::Draw_FIELD();
@@ -704,6 +710,8 @@ void Battle::Finish_Battle(int Comand) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
             Game::select_item = -1;
             Game::select_magic = -1;
+            Battle::Monster_Num = -1;
+            StopSoundMem(bgm);
         }
 
     }

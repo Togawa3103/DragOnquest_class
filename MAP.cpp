@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Sound.h"
 #include "NPC.h"
+#include"Mode.h"
 int MAP::MAP_Num = 0;
 const char *MAP::File_Name = map_data[MAP_Num].Map_Name;
 int MAP::Screen_X;
@@ -14,10 +15,12 @@ int MAP::Move_Count_Y;
 bool MAP::canmove[MAP_HEIGHT][MAP_WIDTH];
 int MAP::map[MAP_HEIGHT][MAP_WIDTH];
 int MAP::cells[MAP_HEIGHT][MAP_WIDTH];
-
+int MAP::map_bgm[MAP_MAX];
 
 MAP::MAP() {
-  
+    for (int i = 0; i < MAP_MAX; i++) {
+        map_bgm[i] = -1;
+    }
 }
 
 MAP::~MAP() {}
@@ -29,7 +32,12 @@ void MAP::Initialize() {
     
 }
 void MAP::Draw_FIELD(){
-    
+    if (!CheckSoundMem(MAP::map_bgm[MAP::MAP_Num])&&Mode::GameMode==GameMode_FIELD) {
+        Sound::PlayBGMSound(map_bgm);
+    }
+    else if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num]) && Mode::GameMode == GameMode_BATTLE) {
+        Sound::StopSound(map_bgm);
+    }
     if (Player::Player_X > Player::old_Player_X) {
         MAP::Screen_X++;
     }
@@ -81,8 +89,11 @@ void MAP::Draw_FIELD(){
 
 void MAP::Load_MAP(int MAP_Num) {
     MAP::Initialize();
+    MAP::MAP_Num = MAP_Num;
     MAP::File_Name = map_data[MAP_Num].Map_Name;
-    Sound::LoadSound(map_data[MAP_Num].BGM_Name);
+    if (map_bgm[MAP_Num]==-1) {
+        Sound::LoadSound(map_data[MAP_Num].BGM_Name,map_bgm);
+    }
     FILE* pFile = fopen(MAP::File_Name, "rb");
     if (pFile == NULL) {
         DxLib_End();
@@ -127,5 +138,6 @@ void MAP::Load_MAP(int MAP_Num) {
         graphDescs[i].Graph_Handle = LoadGraph(graphDescs[i].Graph_Name);
     }
     NPC::Load_NPC(MAP::MAP_Num);
-    Sound::PlayBGMSound(Sound::SHandle);
+    //PlaySoundMem(MAP::map_bgm[MAP_Num], DX_PLAYTYPE_LOOP);
+   // Sound::PlayBGMSound(map_bgm);
 }

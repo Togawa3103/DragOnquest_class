@@ -7,6 +7,7 @@
 #include "MAP.h"
 #include "Mode.h"
 #include "Battle.h"
+#include "Sound.h"
 #include "NPC.h"
 
 
@@ -28,12 +29,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     DxLib_Init();   // DXライブラリ初期化処理
     SetDrawScreen(DX_SCREEN_BACK);
-
+    
     SetTransColor(182, 185, 184);
     
     ClearDrawScreen();
     Game game;
-    game.Initialize();
+    game.Game_Start();
+    if (game.Game_Start()==StartMenu_Start) {
+        game.Initialize();
+    }
     game.Game_Main();
     WaitKey();      // キー入力待ち
     DxLib_End();    // DXライブラリ終了処理
@@ -57,8 +61,68 @@ void Game::Initialize() {
     
 }
 
+int Game::Game_Start() {
+    unsigned int Comand_Cr1 = GetColor(255, 255, 255);
+    unsigned int Comand_Cr2 = GetColor(0, 0, 0);
+    int Select_Menu = 0;
+    while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
+        GetHitKeyStateAll(Mode::keyState);
+
+        DrawBox(200, 370, 350, 500, Comand_Cr1, TRUE);
+        DrawBox(210, 380, 340, 490, Comand_Cr2, TRUE);
+
+        for (int i = 0; i < StartMenu_Max; i++) {
+            if (Select_Menu == i) {
+                DrawBox(215, 385 + 40 * i, 335, 425+40*i, Comand_Cr1, TRUE);
+                DrawFormatString(220, 390+45*i, Comand_Cr2, start[i].startmenu_name);
+            }
+            else {
+                DrawFormatString(220, 390 + 45 * i, Comand_Cr1, start[i].startmenu_name);
+            }
+        }
+
+        if (Player::Player_Time == 0) {
+            if (Mode::keyState[KEY_INPUT_S]) {
+                Select_Menu = (Select_Menu + 1) % (StartMenu_Max);
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+            if (Mode::keyState[KEY_INPUT_W]) {
+                Select_Menu = (Select_Menu + StartMenu_Max - 1) % (StartMenu_Max);
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+            }
+
+            if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+                Player::Player_Time = Player::Player_Time + Game::mFPS;
+                return Select_Menu;
+            }
+            if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
+
+            }
+
+        }
+        if (Player::Player_Time != 0) {
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+        if (Player::Player_Time > 300) {
+            Player::Player_Time = 0;
+        }
+        Mode::old_E_keyState = Mode::keyState[KEY_INPUT_E];
+        Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
+        Mode::old_ESCAPE_keyState = Mode::keyState[KEY_INPUT_RETURN];
+
+        now = clock();
+        looptime = now - end;
+        if (looptime < mFPS) {
+            Sleep(mFPS - looptime);
+        }
+        end = now;
+    }
+
+}
+
+
 void Game::Game_Main() {
-    Initialize();
+    //Initialize();
     
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
@@ -71,8 +135,11 @@ void Game::Game_Main() {
         else if (Mode::GameMode==GameMode_BATTLE) {
             
             if (Battle::Monster_Num < 0) {
+                if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num])) {
+                    // StopSoundFile();
+                    Sound::StopSound(MAP::map_bgm);
+                }
                 Battle::Initialize();
-                
             }
             if (Battle::Battle_Now) {
                 
@@ -133,7 +200,7 @@ void Game::Game_Main() {
             }
             else {
                 Battle::Finish_Battle(old_comand);
-                Battle::Monster_Num = -1;
+                
             }
         }
         else if (Mode::GameMode==GameMode_MENU) {
