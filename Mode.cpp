@@ -2,6 +2,7 @@
 #include "Mode.h"
 #include "Game.h"
 #include "Player.h"
+#include "Sound.h"
 #include "MAP.h"
 #include "Enum.h"
 #include "Battle.h"
@@ -87,9 +88,14 @@ void Mode::Field_Mode() {
     if (MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_STEPS&&(Player::Player_X!=Player::old_Player_X||Player::Player_Y != Player::old_Player_Y)) {
         for (int i = 0; i < map_data[MAP::MAP_Num].map_info.size(); i++) {
             if (Player::Player_X == map_data[MAP::MAP_Num].map_info[i].Start_X && Player::Player_Y == map_data[MAP::MAP_Num].map_info[i].Start_Y) {
+                Sound::StopSound(MAP::map_bgm);
                 MAP::MAP_Num = map_data[MAP::MAP_Num].map_info[i].toMap_Num;
+                
                 MAP::File_Name = map_data[MAP::MAP_Num].Map_Name;
                 MAP::Load_MAP(MAP::MAP_Num);
+
+                
+
                 Player::Player_X = map_data[MAP::MAP_Num].map_info[i].Start_X;
                 Player::Player_Y = map_data[MAP::MAP_Num].map_info[i].Start_Y;
                 Player::old_Player_X = Player::Player_X;
@@ -239,6 +245,11 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                             }
                             MAP::canmove[Player::Player_Y - 1][Player::Player_X] = TRUE;
                             MAP::map[Player::Player_Y - 1][Player::Player_X] = MAP::map[Player::Player_Y][Player::Player_X];
+                            for (int j = 0; j < map_data[MAP::MAP_Num].Door.size(); j++) {
+                                if (map_data[MAP::MAP_Num].Door[j].Door_X ==Player::Player_X&& map_data[MAP::MAP_Num].Door[j].Door_Y==Player::Player_Y-1) {
+                                    MAP::Door_Open[map_data[MAP::MAP_Num].Door[j].Door_Num] = 1;
+                                }
+                            }
                             GameMode = GameMode_FIELD;
 
                         }
@@ -257,6 +268,12 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                             }
                             MAP::canmove[Player::Player_Y][Player::Player_X + 1] = TRUE;
                             MAP::map[Player::Player_Y][Player::Player_X + 1] = MAP::map[Player::Player_Y][Player::Player_X];
+                            for (int j = 0; j < map_data[MAP::MAP_Num].Door.size(); j++) {
+                                if (map_data[MAP::MAP_Num].Door[j].Door_X == Player::Player_X +1
+                                    && map_data[MAP::MAP_Num].Door[j].Door_Y == Player::Player_Y) {
+                                    MAP::Door_Open[map_data[MAP::MAP_Num].Door[j].Door_Num] = 1;
+                                }
+                            }
                             GameMode = GameMode_FIELD;
                         }
                         else {
@@ -274,6 +291,12 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                             }
                             MAP::canmove[Player::Player_Y + 1][Player::Player_X] = TRUE;
                             MAP::map[Player::Player_Y + 1][Player::Player_X] = MAP::map[Player::Player_Y][Player::Player_X];
+                            for (int j = 0; j < map_data[MAP::MAP_Num].Door.size(); j++) {
+                                if (map_data[MAP::MAP_Num].Door[j].Door_X == Player::Player_X 
+                                    && map_data[MAP::MAP_Num].Door[j].Door_Y == Player::Player_Y+1) {
+                                    MAP::Door_Open[map_data[MAP::MAP_Num].Door[j].Door_Num] =1;
+                                }
+                            }
                             GameMode = GameMode_FIELD;
                         }
                         else {
@@ -291,6 +314,12 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                             }
                             MAP::canmove[Player::Player_Y][Player::Player_X - 1] = TRUE;
                             MAP::map[Player::Player_Y][Player::Player_X - 1] = MAP::map[Player::Player_Y][Player::Player_X];
+                            for (int j = 0; j < map_data[MAP::MAP_Num].Door.size(); j++) {
+                                if (map_data[MAP::MAP_Num].Door[j].Door_X == Player::Player_X-1
+                                    && map_data[MAP::MAP_Num].Door[j].Door_Y == Player::Player_Y) {
+                                    MAP::Door_Open[map_data[MAP::MAP_Num].Door[j].Door_Num] = 1;
+                                }
+                            }
                             GameMode = GameMode_FIELD;
                         }
                         else {

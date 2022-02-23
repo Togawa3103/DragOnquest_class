@@ -22,6 +22,8 @@ public:
 	static void Initialize();
 	void Game_Main();
 	int Game_Start();
+	void Save_Data();
+	void Load_Date();
 public:
 	static int Game_Mode;
 	static int FPS;

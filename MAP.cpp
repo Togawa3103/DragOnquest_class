@@ -17,14 +17,18 @@ int MAP::map[MAP_HEIGHT][MAP_WIDTH];
 int MAP::cells[MAP_HEIGHT][MAP_WIDTH];
 int MAP::map_bgm[MAP_MAX];
 
+std::vector<int> MAP::Door_Open(DOOR_MAX,0);
+
 MAP::MAP() {
     for (int i = 0; i < MAP_MAX; i++) {
         map_bgm[i] = -1;
     }
+    MAP::Initialize();
 }
 
 MAP::~MAP() {}
 void MAP::Initialize() {
+    
     MAP::Screen_X = 0;
     MAP::Screen_Y = 0;
     MAP::Move_Count_Y = 0;
@@ -88,7 +92,7 @@ void MAP::Draw_FIELD(){
 }
 
 void MAP::Load_MAP(int MAP_Num) {
-    MAP::Initialize();
+   
     MAP::MAP_Num = MAP_Num;
     MAP::File_Name = map_data[MAP_Num].Map_Name;
     if (map_bgm[MAP_Num]==-1) {
@@ -132,6 +136,12 @@ void MAP::Load_MAP(int MAP_Num) {
             MAP::map[MAP_HEIGHT - 1 - y][x] = cellType;
             MAP::cells[MAP_HEIGHT - 1 - y][x] = cellType;
             MAP::canmove[MAP_HEIGHT - 1 - y][x] = cellDescs[cellType].f_canMove;
+        }
+    }
+    for (int i = 0; i < map_data[MAP_Num].Door.size();i++) {
+        if (Door_Open[map_data[MAP_Num].Door[i].Door_Num]==1) {
+            MAP::canmove[map_data[MAP_Num].Door[i].Door_Y][map_data[MAP_Num].Door[i].Door_X] = TRUE;
+            MAP::map[map_data[MAP_Num].Door[i].Door_Y][map_data[MAP_Num].Door[i].Door_X] = CELL_TYPE_FLOOR;
         }
     }
     for (int i = 0; i < GRAPH_TYPE_MAX; i++) {

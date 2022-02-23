@@ -38,6 +38,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     if (game.Game_Start()==StartMenu_Start) {
         game.Initialize();
     }
+    else {
+        game.Load_Date();
+    }
     game.Game_Main();
     WaitKey();      // キー入力待ち
     DxLib_End();    // DXライブラリ終了処理
@@ -250,5 +253,80 @@ void Game::Game_Main() {
             Sleep(mFPS-looptime);
         }
         end = now;
+        Save_Data();
     }
+}
+
+
+typedef struct {
+    int Player_Lv;
+    //PLAYER_STATUS Player_Status;    
+    int Player_X;
+    int Player_Y;
+    int MAP_Num;
+    int Screen_X;
+    int Screen_Y;
+    int Move_Count_X;
+    int Move_Count_Y;
+    int ItemBox_size;
+    //std::vector<int> ItemBox;
+}SaveData;
+void Game::Save_Data() {
+    FILE* fp = fopen("savedata.dat","wb");
+    //SaveData savedata = { Player::Player_Lv ,Player::now_player_status ,Player::Player_X ,Player::Player_Y ,MAP::MAP_Num ,MAP::Screen_X ,MAP::Screen_Y ,MAP::Move_Count_X ,MAP::Move_Count_Y,Player::ItemBox.size(),Player::ItemBox };
+    SaveData savedata = { Player::Player_Lv ,Player::Player_X ,Player::Player_Y ,MAP::MAP_Num ,MAP::Screen_X ,MAP::Screen_Y ,MAP::Move_Count_X ,MAP::Move_Count_Y,Player::ItemBox.size()};
+    /*fwrite(&(Player::Player_Lv), sizeof(int), 1, fp);
+    fwrite(&(Player::now_player_status), sizeof(PLAYER_STATUS), 1,fp);
+    fwrite(&Player::Player_X, sizeof(int), 1, fp);
+    fwrite(&Player::Player_Y, sizeof(int), 1, fp);
+    fwrite(&MAP::MAP_Num, sizeof(int), 1, fp);
+    fwrite(&MAP::Screen_X, sizeof(int), 1, fp);
+    fwrite(&MAP::Screen_Y, sizeof(int), 1, fp);
+    fwrite(&MAP::Move_Count_X, sizeof(int), 1, fp);
+    fwrite(&MAP::Move_Count_Y, sizeof(int), 1, fp);
+    */
+    fwrite(&savedata,sizeof(savedata),1,fp);
+    fwrite(&Player::now_player_status, sizeof(int)*STATUS_MAX, 1, fp);
+    fwrite(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
+    fwrite(&Player::ItemBox[0], sizeof(Player::ItemBox[0]) * Player::ItemBox.size(), 1, fp);
+    fwrite(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    fclose(fp);
+}
+
+void Game::Load_Date() {
+    FILE* fp = fopen("savedata.dat", "rb");
+    SaveData savedata;
+    //savedata.ItemBox.reserve(10);
+    Player player;
+    MAP map;
+    Mode mode;
+    
+    fread(&savedata,sizeof(savedata),1,fp);
+    fread(&Player::now_player_status, sizeof(int) * STATUS_MAX, 1, fp);
+    fread(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
+    Player::HP = Player::now_player_status.HP;
+    Player::MP = Player::now_player_status.MP;
+    fread(&Player::ItemBox[0], sizeof(&Player::ItemBox[0]) * Player::ItemBox.size(), 1, fp);
+    fread(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    fclose(fp);
+    //Player player;
+    map.Initialize();
+    mode.Initialize();
+    //end = clock();
+    Player::Player_Lv = savedata.Player_Lv;
+   // Player::now_player_status = savedata.Player_Status;
+    //Player::ItemBox = savedata.ItemBox;
+    Player::Player_X = savedata.Player_X;
+    Player::Player_Y = savedata.Player_Y;
+    map.MAP_Num = savedata.MAP_Num;
+    map.Screen_X = savedata.Screen_X;
+    map.Screen_Y = savedata.Screen_Y;
+    map.Move_Count_X = savedata.Move_Count_X;
+    map.Move_Count_Y = savedata.Move_Count_Y;
+    Player::ItemBox.resize(savedata.ItemBox_size);
+    //Player::ItemBox = savedata.ItemBox;
+    map.Load_MAP(map.MAP_Num);
+    map.Draw_FIELD();
+
+    end = clock();
 }
