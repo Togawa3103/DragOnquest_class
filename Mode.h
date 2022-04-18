@@ -88,4 +88,5 @@ public:
 	static void Use_Item(int item_num);
 	static void Draw_Message(int item_num);
 	static void Status_Show();
+	//static void Walk_Effect(int x, int y);
 };

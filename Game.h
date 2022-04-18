@@ -1,6 +1,20 @@
 #include <time.h>
 #include "DxLib.h"
 
+typedef struct {
+	int Player_Lv;
+	//PLAYER_STATUS Player_Status;    
+	int Player_X;
+	int Player_Y;
+	int MAP_Num;
+	int Screen_X;
+	int Screen_Y;
+	int Move_Count_X;
+	int Move_Count_Y;
+	int ItemBox_size;
+	//std::vector<int> ItemBox;
+}SaveData;
+
 enum {
 	StartMenu_Start,
 	StartMenu_Continue,

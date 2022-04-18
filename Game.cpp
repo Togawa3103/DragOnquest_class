@@ -34,7 +34,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     
     ClearDrawScreen();
     Game game;
-    game.Game_Start();
+    //game.Game_Start();
     if (game.Game_Start()==StartMenu_Start) {
         game.Initialize();
     }
@@ -126,14 +126,20 @@ int Game::Game_Start() {
 
 void Game::Game_Main() {
     //Initialize();
-    
+    Player::Player_Time = 0;
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
         GetHitKeyStateAll(Mode::keyState);
         //ScreenFlip();
         //ClearDrawScreen();
+
         if (Mode::GameMode==GameMode_FIELD) {
-            Mode::Field_Mode();
+            
+        Mode::Field_Mode(); 
+     
+            
+            
+            
         }
         else if (Mode::GameMode==GameMode_BATTLE) {
             
@@ -258,19 +264,7 @@ void Game::Game_Main() {
 }
 
 
-typedef struct {
-    int Player_Lv;
-    //PLAYER_STATUS Player_Status;    
-    int Player_X;
-    int Player_Y;
-    int MAP_Num;
-    int Screen_X;
-    int Screen_Y;
-    int Move_Count_X;
-    int Move_Count_Y;
-    int ItemBox_size;
-    //std::vector<int> ItemBox;
-}SaveData;
+
 void Game::Save_Data() {
     FILE* fp = fopen("savedata.dat","wb");
     //SaveData savedata = { Player::Player_Lv ,Player::now_player_status ,Player::Player_X ,Player::Player_Y ,MAP::MAP_Num ,MAP::Screen_X ,MAP::Screen_Y ,MAP::Move_Count_X ,MAP::Move_Count_Y,Player::ItemBox.size(),Player::ItemBox };
@@ -309,10 +303,10 @@ void Game::Load_Date() {
     fread(&Player::ItemBox[0], sizeof(&Player::ItemBox[0]) * Player::ItemBox.size(), 1, fp);
     fread(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
     fclose(fp);
-    //Player player;
+
     map.Initialize();
     mode.Initialize();
-    //end = clock();
+ 
     Player::Player_Lv = savedata.Player_Lv;
    // Player::now_player_status = savedata.Player_Status;
     //Player::ItemBox = savedata.ItemBox;

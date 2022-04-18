@@ -705,8 +705,8 @@ void Battle::Finish_Battle(int Comand) {
     if (Player::Player_Time == 0) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             Mode::GameMode = GameMode_FIELD;
-            Player::Exp = Player::Exp + slime.enemy_status.EXP;
-            Player::Gold = Player::Gold + slime.enemy_status.GOLD;
+            if(!canRun)Player::Exp = Player::Exp + slime.enemy_status.EXP;
+            if(!canRun)Player::Gold = Player::Gold + slime.enemy_status.GOLD;
             Player::Player_Time = Player::Player_Time + Game::mFPS;
             Game::select_item = -1;
             Game::select_magic = -1;
@@ -720,7 +720,7 @@ void Battle::Finish_Battle(int Comand) {
     DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
     DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
     DrawFormatString(115, 385, Comand_Cr1, "せんとうしゅうりょう");
-    DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", slime.enemy_status.EXP, slime.enemy_status.GOLD);
+    if(!canRun)DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", slime.enemy_status.EXP, slime.enemy_status.GOLD);
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }

@@ -18,7 +18,7 @@ int MAP::cells[MAP_HEIGHT][MAP_WIDTH];
 int MAP::map_bgm[MAP_MAX];
 
 std::vector<int> MAP::Door_Open(DOOR_MAX,0);
-
+static int k = 0;
 MAP::MAP() {
     for (int i = 0; i < MAP_MAX; i++) {
         map_bgm[i] = -1;
@@ -42,52 +42,79 @@ void MAP::Draw_FIELD(){
     else if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num]) && Mode::GameMode == GameMode_BATTLE) {
         Sound::StopSound(map_bgm);
     }
-    if (Player::Player_X > Player::old_Player_X) {
-        MAP::Screen_X++;
-    }
-    if (Player::Player_X < Player::old_Player_X) {
-        MAP::Screen_X--;
-    }
-    if (MAP::Screen_X > 7 && Player::Player_X > Player::old_Player_X) {
-        MAP::Screen_X = 7;
-        MAP::Move_Count_X++;
-    }
-    else if (MAP::Screen_X < 2 && Player::Player_X < Player::old_Player_X) {
-        MAP::Screen_X = 2;
-        if (MAP::Move_Count_X > 0) {
-            MAP::Move_Count_X--;
+    if (Player::Player_Time>300) {
+        if (Player::Player_X > Player::old_Player_X) {
+            MAP::Screen_X++;
         }
-    }
-
-    if (Player::Player_Y > Player::old_Player_Y) {
-        MAP::Screen_Y++;
-    }
-    if (Player::Player_Y < Player::old_Player_Y) {
-        MAP::Screen_Y--;
-    }
-    if (MAP::Screen_Y > 8 && Player::Player_Y > Player::old_Player_Y) {
-        MAP::Screen_Y = 8;
-        MAP::Move_Count_Y++;
-    }
-    else if (MAP::Screen_Y < 4 && Player::Player_Y < Player::old_Player_Y) {
-        MAP::Screen_Y = 4;
-        if (MAP::Move_Count_Y > 0) {
-            MAP::Move_Count_Y--;
+        if (Player::Player_X < Player::old_Player_X) {
+            MAP::Screen_X--;
         }
+        if (MAP::Screen_X > 7 && Player::Player_X > Player::old_Player_X) {
+            MAP::Screen_X = 7;
+            MAP::Move_Count_X++;
+        }
+        else if (MAP::Screen_X < 2 && Player::Player_X < Player::old_Player_X) {
+            MAP::Screen_X = 2;
+            if (MAP::Move_Count_X > 0) {
+                MAP::Move_Count_X--;
+            }
+        }
+
+        if (Player::Player_Y > Player::old_Player_Y) {
+            MAP::Screen_Y++;
+        }
+        if (Player::Player_Y < Player::old_Player_Y) {
+            MAP::Screen_Y--;
+        }
+        if (MAP::Screen_Y > 8 && Player::Player_Y > Player::old_Player_Y) {
+            MAP::Screen_Y = 8;
+            MAP::Move_Count_Y++;
+        }
+        else if (MAP::Screen_Y < 4 && Player::Player_Y < Player::old_Player_Y) {
+            MAP::Screen_Y = 4;
+            if (MAP::Move_Count_Y > 0) {
+                MAP::Move_Count_Y--;
+            }
+        }
+
     }
-
-
+    
+    
     for (int i = 0; i < VIEW_RANGE_HEIGHT; i++) {
         for (int j = 0; j < VIEW_RANGE_WIDHT; j++) {
-            DrawExtendGraph(j * 50, i * 50, j * 50 + 50, i * 50 + 50, graphDescs[MAP::map[i + MAP::Move_Count_Y][j + MAP::Move_Count_X]].Graph_Handle, FALSE);
+            DrawExtendGraph(j * 50, i * 50, j * 50 + 50, i * 50 + 50, 
+                graphDescs[MAP::map[i + MAP::Move_Count_Y][j + MAP::Move_Count_X]].Graph_Handle, TRUE);
         }
     }
-    if (Player::PlayerCount / (Game::FPS / 2) > 0) {
+    /*
+    if (Player::PlayerCount / (Game::FPS / 2) > 0 && Player::Player_Time == 0) {
         DrawExtendGraph((Player::Player_X - MAP::Move_Count_X) * 50, (Player::Player_Y - MAP::Move_Count_Y) * 50, (Player::Player_X - MAP::Move_Count_X) * 50 + 50, (Player::Player_Y - MAP::Move_Count_Y) * 50 + 50, graphDescs[GRAPH_TYPE_PLAYER].Graph_Handle, TRUE);
     }
-    else {
+    else if(!(Player::PlayerCount / (Game::FPS / 2) > 0) && Player::Player_Time == 0) {
         DrawExtendGraph((Player::Player_X - MAP::Move_Count_X) * 50, (Player::Player_Y - MAP::Move_Count_Y) * 50, (Player::Player_X - MAP::Move_Count_X) * 50 + 50, (Player::Player_Y - MAP::Move_Count_Y) * 50 + 50, graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
+    }*/
+    
+    if (Player::PlayerCount / (Game::FPS / 2) > 0) {
+        DrawExtendGraph((Player::old_Player_X - MAP::Move_Count_X) * 50 + (k) * (Player::Player_X - Player::old_Player_X),
+            (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+            (Player::old_Player_X - MAP::Move_Count_X) * 50 + 50 + (k) * (Player::Player_X - Player::old_Player_X),
+            (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+            graphDescs[GRAPH_TYPE_PLAYER].Graph_Handle, TRUE);
     }
+    else {
+        DrawExtendGraph((Player::old_Player_X - MAP::Move_Count_X) * 50 + (k) * (Player::Player_X - Player::old_Player_X), 
+            (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + (k) * (Player::Player_Y - Player::old_Player_Y), 
+            (Player::old_Player_X - MAP::Move_Count_X) * 50 + 50 + (k) * (Player::Player_X - Player::old_Player_X), 
+            (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (k) * (Player::Player_Y - Player::old_Player_Y), 
+            graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
+    }
+    if (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
+        k = k + 1;
+        if (k == 50) {
+            k = 0;
+        }
+    }
+    //Mode::Walk_Effect(Player::Player_X, Player::Player_Y);
     NPC::Draw_NPC(NPC::npc_num);
 }
 
