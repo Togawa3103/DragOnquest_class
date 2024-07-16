@@ -1,5 +1,6 @@
 # DragOnquest_class
 DragOnquestのクラスバージョンです(作成途中)。
+失踪しましたが、ぼちぼち再開します。
 
 【プログラミング】初心者がドラ〇エ風RPGを作るよ！(https://www.nicovideo.jp/series/202567) での進捗状況(コードのみ)です。 良ければアドバイス等を頂けると幸いです。
 
