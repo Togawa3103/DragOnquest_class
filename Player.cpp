@@ -15,6 +15,7 @@ int Player::Gold = 0;
 int Player::Exp = 0;
 std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4 }; //‚à‚¿‚à‚Ì
 std::vector<int> Player::MagicBox = {magic_1,magic_2};
+int Player::EquipField[Equip_MAX] = {-1,-1,-1,-1};
 PLAYER_STATUS Player::now_player_status = (player_status[Player::Player_Lv - 1]);
 
 

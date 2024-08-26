@@ -8,3 +8,6 @@
 *.txt
 *.mp3
 *.dat
+*.vcxproj
+.vs/*
+x64/*

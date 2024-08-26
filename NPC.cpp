@@ -92,8 +92,8 @@ void NPC::Draw_Question(int NPC_Num) {
 		DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
 		DrawFormatString(120, 385, TextBox_Cr1, "%s", text[npc[Mode::selected_NPC].text[Talk_Count-1]]);
 	}
-	DrawBox(450, 250, 500, 320, TextBox_Cr1, TRUE);
-	DrawBox(440, 260, 490, 310, TextBox_Cr2, TRUE);
+	DrawBox(430, 250, 520, 340, TextBox_Cr1, TRUE);
+	DrawBox(440, 260, 510, 330, TextBox_Cr2, TRUE);
 	if (Yes_No==0) {
 		DrawBox(444,260,480,290,TextBox_Cr1,TRUE);
 		DrawFormatString(445, 265, TextBox_Cr2, "‚Í‚¢");
@@ -101,7 +101,7 @@ void NPC::Draw_Question(int NPC_Num) {
 	
 	}
 	else {
-		DrawBox(444, 290, 480, 305, TextBox_Cr1, TRUE);
+		DrawBox(444, 290, 500, 325, TextBox_Cr1, TRUE);
 		DrawFormatString(445, 265, TextBox_Cr1, "‚Í‚¢");
 		DrawFormatString(445, 295, TextBox_Cr2, "‚¢‚¢‚¦");
 	}

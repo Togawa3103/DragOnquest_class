@@ -56,6 +56,14 @@ enum {
 	STATUS_MAX,
 };
 
+enum {
+	Equip_Head,
+	Equip_Meal,
+	Equip_Weapon,
+	Equip_Sheild,
+	Equip_MAX,
+};
+
 static int LVUP_EXP[] = {10,30,50,70};
 
 class Player {
@@ -75,6 +83,7 @@ public:
 	static int Exp;
 	static std::vector<int> ItemBox; //‚à‚¿‚à‚Ì
 	static std::vector<int> MagicBox;
+	static int EquipField[Equip_MAX];
 	static bool Lv_Up;
 	static bool haveKey;
 	

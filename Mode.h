@@ -1,5 +1,5 @@
 #pragma once
-
+#include"Player.h"
 enum {
 	GameMode_FIELD,
 	GameMode_MENU,
@@ -52,18 +52,21 @@ static MENU menu[] = {
 typedef struct {
 	const char* Item_name;
 	bool canuse;
+	bool canEquip;
+	int place;
+	int status;
 	int power;
 	bool consumption;
 }ITEM;
 
 
 static ITEM item[] = {
-	{"やくそう",true,30,true},
-	{"かぎ",false,-1,false},
-	{"どうのつるぎ",false,-1,false},
-	{"かわのよろい",false,-1,false},
-	{"うんち",false,-1,false},
-	{"オーブ",false,-1,false}
+	{"やくそう",true,false,-1,-1,30,true},
+	{"かぎ",false,false,-1,-1,-1,false},
+	{"どうのつるぎ",false,true,Equip_Weapon,STATUS_ATTACK, 3,false},
+	{"かわのよろい",false,true,Equip_Meal,STATUS_DEFENSE,3,false},
+	{"うんち",false,false,-1,-1,-1,false},
+	{"オーブ",false,false,-1,-1,-1,false}
 };
 
 class Mode {
@@ -88,5 +91,6 @@ public:
 	static void Use_Item(int item_num);
 	static void Draw_Message(int item_num);
 	static void Status_Show();
-	//static void Walk_Effect(int x, int y);
+	static void Walk_Effect(int x, int y);
+	static void Equip(int item_num);
 };

@@ -31,14 +31,15 @@ typedef struct {
 typedef struct {
 	const char* Map_Name;
 	const char* BGM_Name;
+	bool Monster_Appears;
 	std::vector<MAP_INFO> map_info;
 	std::vector<int > NPC_Num;
 	std::vector<DOOR_INFO> Door;
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp","castle.mp3",{{1,6,8}},{0},{{0,5,7}}},
-	{"map_castle.bmp","castle.mp3",{{0,19,17}},{},{}},
+	{"map_test_door.bmp","castle.mp3",FALSE,{{1,6,8}},{0},{{0,5,7}}},
+	{"map_castle.bmp","castle.mp3",FALSE,{{0,19,17}},{},{}},
 };
 
 typedef struct {

@@ -65,6 +65,8 @@ void Mode::Field_Mode() {
         }
 
         if (MAP::canmove[Next_Y][Next_X]) {
+            Player::old_Player_X = Player::Player_X;
+            Player::old_Player_Y = Player::Player_Y;
             Player::Player_X = Next_X;
             Player::Player_Y = Next_Y;
             //Screen_x = Player_X;
@@ -596,7 +598,10 @@ void Mode::Item_Select() {
                 Use_Item(Player::ItemBox[Select_Item]);
                 show_message = true;
             }
-            else {
+            else if(item[Player::ItemBox[Select_Item]].canEquip){
+                Use_Item(Player::ItemBox[Select_Item]);
+                show_message = true;
+            }else  {
                 show_message = true;
             }
             Player::Player_Time = Player::Player_Time + Game::mFPS;
@@ -719,6 +724,17 @@ void Mode::Use_Item(int item_num) {
             Player::HP = Player::now_player_status.MAXHP;
         }
         break;
+    case Item_CupperSword:
+        Equip(Item_CupperSword);
+        break;
+    }
+}
+
+void Mode::Equip(int item_num) {
+    if (Player::EquipField[item[item_num].place]==-1) {
+        Player::EquipField[item[item_num].place] = item_num;
+        int* p=&Player::now_player_status.HP;
+        *(p + item[item_num].status) += item[item_num].power;
     }
 }
 
@@ -726,13 +742,12 @@ void Mode::Draw_Message(int item_num) {
     if (Player::Player_Time == 0) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             heal = 0;
+            Player::ItemBox.erase(Player::ItemBox.begin() + Select_Item);
             Mode::GameMode = GameMode_FIELD;
             Mode::Selected_Menu = -1;
             Mode::Select_Menu_Num = 0;
             Mode::Select_Item = 0;
             Mode::show_message = false;
-            Player::ItemBox.erase(Player::ItemBox.begin()+Select_Item);
-            
         }
     }
     if (item[item_num].canuse) {
@@ -753,10 +768,10 @@ void Mode::Draw_Message(int item_num) {
     }
 }
 
-/*static int k = 0;
+static int k = 0;
 void Mode::Walk_Effect(int x, int y) {
-    if (Player::Player_X != Player::old_Player_X|| Player::old_Player_Y != Player::old_Player_Y) {
-        k = k + 10;
+ //   if (Player::Player_X != Player::old_Player_X|| Player::old_Player_Y != Player::old_Player_Y) {
+        
         for (int i = 0; i < VIEW_RANGE_HEIGHT; i++) {
             for (int j = 0; j < VIEW_RANGE_WIDHT; j++) {
                 DrawExtendGraph(j * 50, i * 50, j * 50 + 50, i * 50 + 50, 
@@ -764,7 +779,7 @@ void Mode::Walk_Effect(int x, int y) {
             }
         }
 
-        if (Player::PlayerCount % 2 == 0 && Player::Player_Time != 0) {
+       /* if (Player::PlayerCount % 2 == 0 && Player::Player_Time != 0) {
             DrawExtendGraph((Player::old_Player_X - MAP::Move_Count_X) * 50 + (k) * (Player::Player_X - Player::old_Player_X),
                 (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
                 (Player::old_Player_X - MAP::Move_Count_X) * 50 + 50 + (k) * (Player::Player_X - Player::old_Player_X),
@@ -783,10 +798,27 @@ void Mode::Walk_Effect(int x, int y) {
         }
         else if (!(Player::PlayerCount / (Game::FPS / 2) > 0) && Player::Player_Time == 0) {
             DrawExtendGraph((Player::Player_X - MAP::Move_Count_X) * 50, (Player::Player_Y - MAP::Move_Count_Y) * 50, (Player::Player_X - MAP::Move_Count_X) * 50 + 50, (Player::Player_Y - MAP::Move_Count_Y) * 50 + 50, graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
+        }*/
+        if (Player::PlayerCount / (Game::FPS / 2) > 0) {
+            DrawExtendGraph((Player::old_Player_X - MAP::Move_Count_X) * 50 + (k) * (Player::Player_X - Player::old_Player_X),
+                (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+                (Player::old_Player_X - MAP::Move_Count_X) * 50 + 50 + (k) * (Player::Player_X - Player::old_Player_X),
+                (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+                graphDescs[GRAPH_TYPE_PLAYER].Graph_Handle, TRUE);
         }
-        if (k > 40) {
-            k = 0;
+        else {
+            DrawExtendGraph((Player::old_Player_X - MAP::Move_Count_X) * 50 + (k) * (Player::Player_X - Player::old_Player_X),
+                (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+                (Player::old_Player_X - MAP::Move_Count_X) * 50 + 50 + (k) * (Player::Player_X - Player::old_Player_X),
+                (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
+                graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
         }
-    }
+        if (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
+            k = k + 1;
+            if (k == 50) {
+                k = 0;
+            }
+        }
+ //   }
 
-}*/
+}

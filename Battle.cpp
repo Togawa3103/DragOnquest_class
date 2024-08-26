@@ -63,7 +63,7 @@ void Battle::Draw_Battle() {
     }
 }
 int Battle::Start_Battle(int Player_Count) {
-	if (Player_Count < 10) {
+	if (Player_Count < 10&& map_data[MAP::MAP_Num].Monster_Appears) {
 		return GameMode_BATTLE;
 	}
 	else {
