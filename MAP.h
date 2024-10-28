@@ -7,15 +7,18 @@
 
 #define VIEW_RANGE_WIDHT 12
 #define VIEW_RANGE_HEIGHT 10
+
 enum {
 	DOOR_0,
 	DOOR_MAX,
 };
+
 enum {
 	MAP_KINGROOM,
 	MAP_CASTLE,
 	MAP_MAX,
 };
+
 typedef struct {
 	int toMap_Num;
 	int Start_X;
@@ -38,7 +41,7 @@ typedef struct {
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp","castle.mp3",FALSE,{{1,6,8}},{0},{{0,5,7}}},
+	{"map_test_door.bmp","castle.mp3",TRUE,{{1,6,8}},{0},{{0,5,7}}},
 	{"map_castle.bmp","castle.mp3",FALSE,{{0,19,17}},{},{}},
 };
 
@@ -63,7 +66,6 @@ static CELLDESC cellDescs[] = {
 	{232,162,0,TRUE},//CELL_TYPE_STEPS
 	{0,255,255,FALSE},//CELL_TYPE_TREASURE
 	{255,0,0,FALSE},//CELL_TYPE_PLAYER
-
 };
 
 

@@ -6,6 +6,7 @@
 #include "Sound.h"
 #include "NPC.h"
 #include"Mode.h"
+
 int MAP::MAP_Num = 0;
 const char* MAP::File_Name = map_data[MAP_Num].Map_Name;
 int MAP::Screen_X;
@@ -21,26 +22,27 @@ std::vector<int> MAP::Door_Open(DOOR_MAX, 0);
 static int k = 0;
 MAP::MAP() {
     for (int i = 0; i < MAP_MAX; i++) {
-        map_bgm[i] = -1;
+        MAP::map_bgm[i] = -1;
     }
     MAP::Initialize();
 }
 
 MAP::~MAP() {}
-void MAP::Initialize() {
 
+void MAP::Initialize() {
     MAP::Screen_X = 0;
     MAP::Screen_Y = 0;
     MAP::Move_Count_Y = 0;
     MAP::Move_Count_X = 0;
 
 }
+
 void MAP::Draw_FIELD() {
     if (!CheckSoundMem(MAP::map_bgm[MAP::MAP_Num]) && Mode::GameMode == GameMode_FIELD) {
-        Sound::PlayBGMSound(map_bgm);
+        Sound::PlayBGMSound(MAP::map_bgm);
     }
     else if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num]) && Mode::GameMode == GameMode_BATTLE) {
-        Sound::StopSound(map_bgm);
+        Sound::StopSound(MAP::map_bgm);
     }
     if (Player::Player_Time >299) {
         if (Player::Player_X > Player::old_Player_X) {
@@ -121,8 +123,8 @@ void MAP::Load_MAP(int MAP_Num) {
 
     MAP::MAP_Num = MAP_Num;
     MAP::File_Name = map_data[MAP_Num].Map_Name;
-    if (map_bgm[MAP_Num] == -1) {
-        Sound::LoadSound(map_data[MAP_Num].BGM_Name, map_bgm);
+    if (MAP::map_bgm[MAP::MAP_Num] == -1) {
+        Sound::LoadSound(map_data[MAP::MAP_Num].BGM_Name, MAP::map_bgm);
     }
     FILE* pFile = fopen(MAP::File_Name, "rb");
     if (pFile == NULL) {

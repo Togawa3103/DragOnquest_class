@@ -24,56 +24,86 @@ int old_comand=-1;
 bool Game::Talk_now = false;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    ChangeWindowMode(TRUE);
-    SetGraphMode(600, 500, 32);
+    ChangeWindowMode(TRUE); //ウインドウモード(TRUE)・フルスクリーンモード(FALSE)の変更(DXライブラリ)
+    SetGraphMode(600, 500, 32); //画面モードの変更(画面の解像度、カラービット数)
 
     DxLib_Init();   // DXライブラリ初期化処理
-    SetDrawScreen(DX_SCREEN_BACK);
+    SetDrawScreen(DX_SCREEN_BACK); //描画先グラフィック領域の指定(DX_SCREEN_FRONT:表の画面　DX_SCREEN_BACK:裏の画面)
     
-    SetTransColor(182, 185, 184);
-    
-    ClearDrawScreen();
-    Game game;
+    SetTransColor(182, 185, 184); //グラフィックで透明色にする色をセット
+
+    ClearDrawScreen(); //画面に描画されたものを消去する
+
+    //Game game;
     //game.Game_Start();
-    if (game.Game_Start()==StartMenu_Start) {
+
+    //スタート画面の表示
+    /*if (game.Game_Start() == StartMenu_Start) {
         game.Initialize();
     }
     else {
         game.Load_Date();
-    }
-    game.Game_Main();
+    }*/
+    //スタート画面の表示
+    //game.Game_Start();
+    Game::Game_Start();
+    //ゲームメインループ
+    //game.Game_Main(&game.player,&game.mode,&game.map);
+    Game::Game_Main();
+
     WaitKey();      // キー入力待ち
     DxLib_End();    // DXライブラリ終了処理
     return 0;
 }
 
 Game::Game() {
+    Initialize();
 }
+
 Game::~Game() {
 }
 
 void Game::Initialize() {
-    Player player;
-    MAP map;
-    Mode mode;
-    map.Initialize();
-    map.Load_MAP(map.MAP_Num);
-    map.Draw_FIELD();
-    mode.Initialize();
-    end = clock();
-    
+    //game->player = Player(); //gameのPlayerを初期化
+    //game->map = MAP(); //gameのMAPを初期化
+    //game->mode = Mode(); ////gameのModeを初期化
+    end = clock(); //ゲーム開始の時間設定
 }
 
-int Game::Game_Start() {
+void Game::Game_Start() {
+    if (Game::Game_StartDraw() == StartMenu_Start) {
+        Game::Start(); //はじめから
+    }
+    else {
+        Game::Load_Date(); //つづきから
+    }
+}
+
+void Game::Start() {
+    //game->map.Initialize(); //マップの初期化
+    //game->map.Load_MAP(game->map.MAP_Num); //マップデータの取得
+    //game->map.Draw_FIELD(); //マップの表示
+    //game->mode.Initialize(); //ゲームの状態を初期化
+    MAP::MAP(); //マップの初期化
+    MAP::Load_MAP(MAP::MAP_Num); //マップデータの取得
+    MAP::Draw_FIELD(); //マップの表示
+    Mode::Initialize(); //ゲームの状態を初期化
+    end = clock(); //ゲーム開始の時間設定
+}
+
+//スタート画面の表示
+int Game::Game_StartDraw() {
     unsigned int Comand_Cr1 = GetColor(255, 255, 255);
     unsigned int Comand_Cr2 = GetColor(0, 0, 0);
     int Select_Menu = 0;
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
-        GetHitKeyStateAll(Mode::keyState);
+        GetHitKeyStateAll(Mode::keyState); //キーボード入力の取得
 
-        DrawBox(200, 370, 350, 500, Comand_Cr1, TRUE);
-        DrawBox(210, 380, 340, 490, Comand_Cr2, TRUE);
+        //外枠の表示
+        DrawBox(200, 370, 350, 500, Comand_Cr1, TRUE); 
+        DrawBox(210, 380, 340, 490, Comand_Cr2, TRUE); 
 
+        //選択肢の表示
         for (int i = 0; i < StartMenu_Max; i++) {
             if (Select_Menu == i) {
                 DrawBox(215, 385 + 40 * i, 335, 425+40*i, Comand_Cr1, TRUE);
@@ -84,35 +114,47 @@ int Game::Game_Start() {
             }
         }
 
+        //キー入力によって状態を変える
         if (Player::Player_Time == 0) {
-            if (Mode::keyState[KEY_INPUT_S]) {
+            //Sキーを押した場合
+            if (Mode::keyState[KEY_INPUT_S]) { 
                 Select_Menu = (Select_Menu + 1) % (StartMenu_Max);
                 Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
-            if (Mode::keyState[KEY_INPUT_W]) {
+            //Wキーを押した場合
+            if (Mode::keyState[KEY_INPUT_W]) { 
                 Select_Menu = (Select_Menu + StartMenu_Max - 1) % (StartMenu_Max);
                 Player::Player_Time = Player::Player_Time + Game::mFPS;
             }
 
+            //エンターキーを押した場合
             if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
                 Player::Player_Time = Player::Player_Time + Game::mFPS;
                 return Select_Menu;
             }
+
+            //エスケープを押した場合
             if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
 
             }
-
         }
+
+        //キーの入力後1フレームごとにmFPSを加算
         if (Player::Player_Time != 0) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
+        
+        //0.3秒ごとに入力可能にする
         if (Player::Player_Time > 300) {
             Player::Player_Time = 0;
         }
+        
+        //前回のキーの状態を保持
         Mode::old_E_keyState = Mode::keyState[KEY_INPUT_E];
         Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
         Mode::old_ESCAPE_keyState = Mode::keyState[KEY_INPUT_RETURN];
 
+        //フレームの待機処理
         now = clock();
         looptime = now - end;
         if (looptime < mFPS) {
@@ -120,10 +162,9 @@ int Game::Game_Start() {
         }
         end = now;
     }
-
 }
 
-
+//メインループ
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
@@ -134,12 +175,7 @@ void Game::Game_Main() {
         //ClearDrawScreen();
 
         if (Mode::GameMode==GameMode_FIELD) {
-            
-        Mode::Field_Mode(); 
-     
-            
-            
-            
+            Mode::Field_Mode();  
         }
         else if (Mode::GameMode==GameMode_BATTLE) {
             
@@ -229,11 +265,23 @@ void Game::Game_Main() {
                     NPC::finish_text = 0;
                 }
                 else if (Talk_now) {
-                    if (npc[Mode::selected_NPC].text[NPC::Talk_Count]>=0) {
-                        NPC::Draw_Talk(Mode::selected_NPC);
-                    }
-                    else {
-                        NPC::Draw_Question(Mode::selected_NPC);
+                    switch (Mode::selected_NPC) {
+                    case NPC_TYPE_INN:
+                        if (npc[Mode::selected_NPC].text[NPC::Talk_Count] >= 0) {
+                            NPC::Draw_INNTalk(Mode::selected_NPC);
+                        }
+                        else {
+                            NPC::Draw_INN(Mode::selected_NPC);
+                        }
+                        break;
+                    default:
+                        if (npc[Mode::selected_NPC].text[NPC::Talk_Count] >= 0) {
+                            NPC::Draw_Talk(Mode::selected_NPC);
+                        }
+                        else {
+                            NPC::Draw_Question(Mode::selected_NPC);
+                        }
+                        break;
                     }
                 }
             }

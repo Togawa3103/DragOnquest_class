@@ -7,7 +7,7 @@ Sound::Sound() {
 }
 
 void Sound::LoadSound(const char *SoundName,int* map_bgm) {
-	map_bgm[MAP::MAP_Num]=LoadSoundMem(SoundName);
+	MAP::map_bgm[MAP::MAP_Num]=LoadSoundMem(SoundName);
 	ChangeVolumeSoundMem(100, map_bgm[MAP::MAP_Num]);
 }
 

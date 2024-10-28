@@ -27,7 +27,7 @@ static TEXT text[] = {
 	"まおうをたおしにいくらしいな！",
 	"がんばってくれ！",
 	"おうえんしているぞ！",
-	"泊まりますか？\n一泊5Gです。",
+	"泊まりますか？\n一泊?Gです。",
 	"ごゆっくり",
 	"またきてね",
 };
@@ -69,5 +69,7 @@ public:
 	static void Draw_NPC(std::vector<int> npc_num);
 	static void Draw_Talk(int NPC_Num);
 	static void Draw_Question(int NPC_Num);
+	static void Draw_INN(int NPC_Num);
+	static void Draw_INNTalk(int NPC_Num);
 };
 
