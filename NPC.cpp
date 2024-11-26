@@ -157,7 +157,7 @@ void NPC::Draw_INNTalk(int NPC_Num) {
 		}
 		else {
 			if (Yes_No == 0) {
-				if (Player::Gold < std::stoi(gold)) {
+				if (Player::Gold > std::stoi(gold)) {
 					DrawFormatString(120, 385, TextBox_Cr1, "%s", text[npc[Mode::selected_NPC].text[Talk_Count]]); 
 					INN::BUY(TRUE);
 				}

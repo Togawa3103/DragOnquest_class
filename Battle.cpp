@@ -6,6 +6,7 @@
 #include "MAP.h"
 #include "Monster.h"
 #include "Enum.h"
+#include "Magic.h"
 #include"Sound.h"
 #include<random>
 
@@ -169,6 +170,12 @@ int Battle::Select_Magic() {
         }
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
+            if (Player::now_player_status.MP > magic[Player::MagicBox[select_magic]].magic_mp) {
+                canuse = true;
+            }
+            else {
+                canuse = false;
+            }
             return select_magic;
         }
         if (Mode::keyState[KEY_INPUT_ESCAPE] && !Mode::old_ESCAPE_keyState) {
