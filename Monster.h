@@ -4,6 +4,7 @@
 #include <vector>
 enum {
 	Monster_Slime,
+	Monster_Bat,
 	Monster_MAX,
 };
 
@@ -28,11 +29,22 @@ static Monster_Status slime = {
 	{0},
 };
 
+static Monster_Status bat = {
+	Monster_Slime,
+	{8,	-1,	0,	-1,	4,	3,	5,	0,	0,	4,	3},
+	"bat.bmp",
+	"ƒoƒbƒg",
+	{0},
+};
+
+
 class Monster {
 public:
+	static std::vector<Monster_Status> MonsterArray;
 	static int set_Monster(int MAP_Num);
 	//static void Cal_Damage(int Comand);
 	static int now_HP;
 	static int now_MP;
 	static int now_Attack;
+	static PLAYER_STATUS now_Monster;
 };

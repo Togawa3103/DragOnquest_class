@@ -32,9 +32,10 @@ bool canuse = true;
 int bgm;
 void Battle::Initialize() {
     Battle::Monster_Num= Monster::set_Monster(MAP::MAP_Num);
-    Battle::Monster_graph = LoadGraph(slime.Monster_Graph_Name);
-    Monster::now_HP = slime.enemy_status.MAXHP;
-    Monster::now_MP = slime.enemy_status.MAXMP;
+    Battle::Monster_graph = LoadGraph(Monster::MonsterArray[Battle::Monster_Num].Monster_Graph_Name);
+    Monster::now_Monster = Monster::MonsterArray[Battle::Monster_Num].enemy_status;
+    Monster::now_Monster.HP = Monster::now_Monster.MAXHP;
+    Monster::now_Monster.MP = Monster::now_Monster.MAXMP;
     Select_Comand = 0;
     //Battle_Now = true;
     canRun = false;
@@ -59,7 +60,7 @@ void Battle::Draw_Battle() {
     DrawFormatString(30, 60, Comand_Cr1, "MP:%d", Player::MP);
     if (debug) {
         DrawBox(0,0,200,200,Comand_Cr1,TRUE);
-        DrawFormatString(10,10,Comand_Cr2,"%d",Monster::now_HP);
+        DrawFormatString(10,10,Comand_Cr2,"%d", Monster::now_Monster.HP);
         DrawFormatString(10, 50, Comand_Cr2, "%d", Player::HP);
     }
 }
@@ -383,7 +384,7 @@ void Battle::Draw_Message(int Comand,int turn) {
         DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
         DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
         if (turn ==1) {          
-            DrawFormatString(115, 385, Comand_Cr1, "%sに%dのダメージ！", slime.Monster_Name, damage);
+            DrawFormatString(115, 385, Comand_Cr1, "%sに%dのダメージ！", Monster::MonsterArray[Battle::Monster_Num].Monster_Name, damage);
         }
         else {
             
@@ -428,7 +429,7 @@ void Battle::Draw_Message(int Comand, int turn, int magic_num) {
                 }
             }
             else {
-                DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", slime.Monster_Name, Heal);
+                DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", Monster::MonsterArray[Battle::Monster_Num].Monster_Name, Heal);
             }
             break;
         case magic_2:
@@ -437,7 +438,7 @@ void Battle::Draw_Message(int Comand, int turn, int magic_num) {
                     DrawFormatString(115, 385, Comand_Cr1, "MPが足りない！");
                 }
                 else {
-                    DrawFormatString(115, 385, Comand_Cr1, "%sに%dのダメージ！", slime.Monster_Name, damage);
+                    DrawFormatString(115, 385, Comand_Cr1, "%sに%dのダメージ！", Monster::MonsterArray[Battle::Monster_Num].Monster_Name, damage);
                 }
             }
             else {
@@ -485,7 +486,7 @@ void Battle::Draw_Message(int Comand, int turn,int item_num,bool canuse) {
             DrawFormatString(115, 385, Comand_Cr1, "ゆうしゃは%dかいふくした！", Heal);
         }
         else {
-            DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", slime.Monster_Name, Heal);
+            DrawFormatString(115, 385, Comand_Cr1, "%sは%dかいふくした！", Monster::MonsterArray[Battle::Monster_Num].Monster_Name, Heal);
         }
         break;
     default:
@@ -503,7 +504,7 @@ void Battle::Draw_Message(int Comand, int turn,int item_num,bool canuse) {
     }
 }
 void Battle::check_speed() {
-    if (Player::now_player_status.SPEED>slime.enemy_status.SPEED) {
+    if (Player::now_player_status.SPEED> Monster::MonsterArray[Battle::Monster_Num].enemy_status.SPEED) {
         Turn = 1;
     }
     else {
@@ -515,7 +516,7 @@ void Battle::check_speed() {
     switch (Comand) {
     case Comand_Fight:
        
-        slime.enemy_status.HP = Player::now_player_status.ATTACK - slime.enemy_status.DEFENSE;
+        Monster::MonsterArray[Battle::Monster_Num].enemy_status.HP = Player::now_player_status.ATTACK - Monster::MonsterArray[Battle::Monster_Num].enemy_status.DEFENSE;
         Draw_Message(Comand,Turn);
         
         
@@ -544,7 +545,7 @@ void Battle::check_speed() {
 int Battle::Enemy_AI() {
     std::random_device rand;
     //int comand = 0;
-    int attack=slime.Attack[0];
+    int attack= Monster::MonsterArray[Battle::Monster_Num].Attack[0];
 
     return attack;
 }
@@ -590,15 +591,15 @@ void Battle::Cal_Damage(int turn,int Comand) {
     switch (Comand) {
     case Comand_Fight:
         if (turn == 1) {
-            damage = (Player::now_player_status.ATTACK - slime.enemy_status.DEFENSE);
+            damage = (Player::now_player_status.ATTACK - Monster::MonsterArray[Battle::Monster_Num].enemy_status.DEFENSE);
             if (damage <= 0) {
                 damage = 1;
             }
-            Monster::now_HP = Monster::now_HP - damage;
+            Monster::now_Monster.HP = Monster::now_Monster.HP - damage;
 
         }
         else {         
-            damage =  (slime.enemy_status.ATTACK - Player::now_player_status.DEFENSE);
+            damage =  (Monster::MonsterArray[Battle::Monster_Num].enemy_status.ATTACK - Player::now_player_status.DEFENSE);
             if (damage<=0) {
                 damage = 1;
             }
@@ -632,27 +633,27 @@ void Battle::Cal_Damage(int turn, int Comand, int Magic_Num) {
             }
         }
         else {
-            Heal = 25 + (rand() % slime.enemy_status.WISE);
-            if (Monster::now_HP + Heal > slime.enemy_status.MAXHP) {
-                Monster::now_HP = slime.enemy_status.MAXHP;
-                Heal = slime.enemy_status.MAXHP - Monster::now_HP;
+            Heal = 25 + (rand() % Monster::MonsterArray[Battle::Monster_Num].enemy_status.WISE);
+            if (Monster::now_Monster.HP + Heal > Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP) {
+                Monster::now_Monster.HP = Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP;
+                Heal = Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP - Monster::now_Monster.HP;
             }
             else {
-                Monster::now_HP = Monster::now_HP + Heal;
+                Monster::now_Monster.HP = Monster::now_Monster.HP + Heal;
             }
         }
         break;
     case magic_Type_2:
         if (turn == 1) {
             Player::MP -= magic[Magic_Num].magic_mp;
-            damage = magic[Magic_Num].magic_power+(rand()%Player::now_player_status.WISE)-slime.enemy_status.MAGICDEF;
+            damage = magic[Magic_Num].magic_power+(rand()%Player::now_player_status.WISE)- Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAGICDEF;
             if (damage <= 0) {
                 damage = 1;
             }
-            Monster::now_HP = Monster::now_HP - damage;
+            Monster::now_Monster.HP = Monster::now_Monster.HP - damage;
         }
         else {
-            damage = 5+(rand()%slime.enemy_status.WISE - Player::now_player_status.MAGICDEF);
+            damage = 5+(rand()% Monster::MonsterArray[Battle::Monster_Num].enemy_status.WISE - Player::now_player_status.MAGICDEF);
             if (damage <= 0) {
                 damage = 1;
             }
@@ -685,12 +686,12 @@ void Battle::Cal_Damage(int turn, int Comand, int item_Num,bool canuse) {
         }
         else {
             Heal = 30;
-            if (Monster::now_HP + Heal > slime.enemy_status.MAXHP) {
-                Monster::now_HP = slime.enemy_status.MAXHP;
-                Heal = slime.enemy_status.MAXHP - Monster::now_HP;
+            if (Monster::now_Monster.HP + Heal > Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP) {
+                Monster::now_Monster.HP = Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP;
+                Heal = Monster::MonsterArray[Battle::Monster_Num].enemy_status.MAXHP - Monster::now_Monster.HP;
             }
             else {
-                Monster::now_HP = Monster::now_HP + Heal;
+                Monster::now_Monster.HP = Monster::now_Monster.HP + Heal;
             }
         }
         break;
@@ -700,7 +701,7 @@ void Battle::Cal_Damage(int turn, int Comand, int item_Num,bool canuse) {
 }
 
 void Battle::Check_Battle_End() {
-    if (Monster::now_HP <= 0 || Player::HP <= 0) {
+    if (Monster::now_Monster.HP <= 0 || Player::HP <= 0) {
         Battle_Now = false;
     }
     if (canRun) {
@@ -712,12 +713,12 @@ void Battle::Finish_Battle(int Comand) {
     if (Player::Player_Time == 0) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             Mode::GameMode = GameMode_FIELD;
-            if(!canRun)Player::Exp = Player::Exp + slime.enemy_status.EXP;
-            if(!canRun)Player::Gold = Player::Gold + slime.enemy_status.GOLD;
+            if(!canRun)Player::Exp = Player::Exp + Monster::MonsterArray[Battle::Monster_Num].enemy_status.EXP;
+            if(!canRun)Player::Gold = Player::Gold + Monster::MonsterArray[Battle::Monster_Num].enemy_status.GOLD;
             Player::Player_Time = Player::Player_Time + Game::mFPS;
             Game::select_item = -1;
             Game::select_magic = -1;
-            Battle::Monster_Num = -1;
+            
             StopSoundMem(bgm);
         }
 
@@ -727,7 +728,8 @@ void Battle::Finish_Battle(int Comand) {
     DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
     DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
     DrawFormatString(115, 385, Comand_Cr1, "せんとうしゅうりょう");
-    if(!canRun)DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", slime.enemy_status.EXP, slime.enemy_status.GOLD);
+    if(!canRun)DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", Monster::MonsterArray[Battle::Monster_Num].enemy_status.EXP, Monster::MonsterArray[Battle::Monster_Num].enemy_status.GOLD);
+    if (Mode::GameMode == GameMode_FIELD) Battle::Monster_Num = -1;
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }

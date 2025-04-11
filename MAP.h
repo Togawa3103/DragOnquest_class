@@ -38,10 +38,11 @@ typedef struct {
 	std::vector<MAP_INFO> map_info;
 	std::vector<int > NPC_Num;
 	std::vector<DOOR_INFO> Door;
+	std::vector<int> Monster_Array;
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp","castle.mp3",TRUE,{{1,6,8}},{0},{{0,5,7}}},
+	{"map_test_door.bmp","castle.mp3",TRUE,{{1,6,8}},{0},{{0,5,7}},{0,1}},
 	{"map_castle.bmp","castle.mp3",FALSE,{{0,19,17}},{},{}},
 };
 

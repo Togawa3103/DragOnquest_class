@@ -245,7 +245,7 @@ void Game::Game_Main() {
             }
             else {
                 Battle::Finish_Battle(old_comand);
-                
+
             }
         }
         else if (Mode::GameMode==GameMode_MENU) {
@@ -329,8 +329,8 @@ void Game::Save_Data() {
     */
     fwrite(&savedata,sizeof(savedata),1,fp);
     fwrite(&Player::now_player_status, sizeof(int)*STATUS_MAX, 1, fp);
-    fwrite(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
-    fwrite(&Player::ItemBox[0], sizeof(Player::ItemBox[0]) * Player::ItemBox.size(), 1, fp);
+    fwrite(&Player::MagicBox, sizeof(int) * Player::MagicBox.size(), 1, fp);
+    fwrite(&Player::ItemBox[0], sizeof(int) * Player::ItemBox.size(), 1, fp);
     fwrite(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
     fclose(fp);
 }
