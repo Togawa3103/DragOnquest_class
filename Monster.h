@@ -5,11 +5,15 @@
 enum {
 	Monster_Slime,
 	Monster_Bat,
+	Monster_Ghost,
 	Monster_MAX,
 };
 
 enum {
 	Attack_1,//Attack
+	Attack_2,//Magic
+	Attack_3,//Item
+	Attack_4,//Run
 	Attack_MAX,
 };
 
@@ -19,6 +23,8 @@ typedef struct {
 	const char* Monster_Graph_Name;
 	const char* Monster_Name;
 	std::vector<int> Attack;
+	std::vector<float> Attack_Rate;
+	std::vector<int> Magic;
 }Monster_Status;
 
 static Monster_Status slime = {
@@ -27,6 +33,8 @@ static Monster_Status slime = {
 	"slime.bmp",
 	"スライム",
 	{0},
+	{1.0},
+	{}
 };
 
 static Monster_Status bat = {
@@ -35,6 +43,18 @@ static Monster_Status bat = {
 	"bat.bmp",
 	"バット",
 	{0},
+	{1.0},
+	{}
+};
+
+static Monster_Status ghost = {
+	Monster_Ghost,
+	{8,	-1,	0,	-1,	4,	3,	5,	20,	2,	4,	3},
+	"ghost.bmp",
+	"ゴースト",
+	{0,1},
+	{0.3,0.7},
+	{magic_2}
 };
 
 

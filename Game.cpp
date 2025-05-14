@@ -174,11 +174,12 @@ void Game::Game_Main() {
         //ScreenFlip();
         //ClearDrawScreen();
 
-        if (Mode::GameMode==GameMode_FIELD) {
+        if (Mode::GameMode==GameMode_FIELD) { //フィールドモード
             Mode::Field_Mode();  
         }
-        else if (Mode::GameMode==GameMode_BATTLE) {
+        else if (Mode::GameMode==GameMode_BATTLE) { //バトルモード
             
+            //バトルモードになったとき(Monster_Numが"-1"のとき)
             if (Battle::Monster_Num < 0) {
                 if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num])) {
                     // StopSoundFile();
@@ -186,17 +187,34 @@ void Game::Game_Main() {
                 }
                 Battle::Initialize();
             }
+
+            //バトル中
             if (Battle::Battle_Now) {
                 
+                //バトル画面表示
                 Battle::Draw_Battle();
+
+                //自分のターン
                 if (comand < 0 && Battle::Turn == 1) {
+                    //コマンド選択
                     comand = Battle::Set_Comand();
+                    
+                    //選択したコマンドが"逃げる"or"たたかう"のとき
                     if (comand == Comand_Run||comand==Comand_Fight) {
-                        
+                        //ステータス更新
                         Battle::Update_Player(comand);
                     }
 
                 }
+                //"まほう"を選択し、なにも魔法を覚えていない場合、メッセージ表示しコマンド選択に戻る
+                else if((comand== Comand_Magic&&Player::MagicBox.size() == 0)) {
+                    Battle::NoMagic();
+                }
+                //"どうぐ"を選択し、なにも道具を持っていない場合、メッセージ表示しコマンド選択に戻る
+                else if ((comand == Comand_Item && Player::ItemBox.size() == 0)) {
+                    Battle::NoItem();
+                }
+                //選択したコマンドが"まほう"のとき、"まほう"選択画面を表示
                 else if (select_magic < 0 && comand == Comand_Magic && Battle::Turn == 1) {
                     select_magic = Battle::Select_Magic();
                     if (select_magic >= 0) {
@@ -204,6 +222,7 @@ void Game::Game_Main() {
                         Battle::Update_Player(comand);
                     }
                 }
+                //選択したコマンドが"どうぐ"のとき、"どうぐ"選択画面を表示
                 else if (select_item < 0&&comand==Comand_Item&&Battle::Turn==1) {
                     select_item = Battle::Select_Item();
                     if (select_item >= 0) {
@@ -211,12 +230,14 @@ void Game::Game_Main() {
                        Battle::Update_Player(comand);
                     }
                 }
+                //敵のターンのとき
                 else  if(comand<0&&Battle::Turn==0){
-                    comand=Battle::Enemy_AI();
-                    
+                    comand=Battle::Enemy_AI(Battle::Monster_Num);
+                    select_magic = magic_2;
                     Battle::Update_Monster(comand);
 
                 }
+                //コマンドが選ばれているとき
                 else if (comand>=0) {
                     switch (comand) {
                     case Comand_Run:
@@ -248,7 +269,7 @@ void Game::Game_Main() {
 
             }
         }
-        else if (Mode::GameMode==GameMode_MENU) {
+        else if (Mode::GameMode==GameMode_MENU) { //メニューモード
             MAP::Draw_FIELD();
             if (Mode::Selected_Menu < 0) {
                 Mode::Menu_Mode();
@@ -307,7 +328,7 @@ void Game::Game_Main() {
             Sleep(mFPS-looptime);
         }
         end = now;
-        Save_Data();
+       // Save_Data();
     }
 }
 
@@ -329,9 +350,10 @@ void Game::Save_Data() {
     */
     fwrite(&savedata,sizeof(savedata),1,fp);
     fwrite(&Player::now_player_status, sizeof(int)*STATUS_MAX, 1, fp);
-    fwrite(&Player::MagicBox, sizeof(int) * Player::MagicBox.size(), 1, fp);
-    fwrite(&Player::ItemBox[0], sizeof(int) * Player::ItemBox.size(), 1, fp);
-    fwrite(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    //fwrite(&Player::MagicBox, sizeof(int) * Player::MagicBox.size(), 1, fp);
+    fwrite(&MAP::Door_Open, sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    //fwrite(&Player::ItemBox.size(), sizeof(int), 1, fp);
+    fwrite(&Player::ItemBox, sizeof(int) * Player::ItemBox.size(), 1, fp);
     fclose(fp);
 }
 
@@ -345,11 +367,15 @@ void Game::Load_Date() {
     
     fread(&savedata,sizeof(savedata),1,fp);
     fread(&Player::now_player_status, sizeof(int) * STATUS_MAX, 1, fp);
-    fread(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
+    //fread(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
     Player::HP = Player::now_player_status.HP;
     Player::MP = Player::now_player_status.MP;
-    fread(&Player::ItemBox[0], sizeof(&Player::ItemBox[0]) * Player::ItemBox.size(), 1, fp);
-    fread(&MAP::Door_Open[0], sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    fread(&MAP::Door_Open, sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    int * tmp=(int*)malloc(sizeof(&Player::ItemBox[0]) * savedata.ItemBox_size);
+    fread(tmp, sizeof(&Player::ItemBox[0]) * savedata.ItemBox_size, 1, fp);
+    for (int i = 0; i < savedata.ItemBox_size;i++) {
+        Player::ItemBox.push_back(*(tmp+i));
+    }
     fclose(fp);
 
     map.Initialize();

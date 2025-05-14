@@ -41,7 +41,7 @@ public:
 	static void Draw_Message(int Comand,int turn, int item_Num, bool canuse);//“¹‹ï
 	static void check_speed();
 	//static void Player_Turn(int Comand);
-	static int Enemy_AI();
+	static int Enemy_AI(int Monster_Num);
 	//static void Turn_Swap();
 
 	static void Update_Player(int Comand);
@@ -52,6 +52,9 @@ public:
 	static void Check_Battle_End();
 
 	static void Effect(int turn,int Comand,int sub_Num);
+	
+	static void NoMagic();
+	static void NoItem();
 
 	static int Turn;//0:Enemy 1:Player
 	static bool Battle_Now;

@@ -542,12 +542,19 @@ void Battle::check_speed() {
     
 }*/
 
-int Battle::Enemy_AI() {
+int Battle::Enemy_AI(int Monster_Num) {
     std::random_device rand;
     //int comand = 0;
-    int attack= Monster::MonsterArray[Battle::Monster_Num].Attack[0];
-
-    return attack;
+    //int attack= Monster::MonsterArray[Monster_Num].Attack[0];
+    //return attack;
+    int rate = rand() % 100 /100;
+    float count = 0;
+    for (int i = 0; i < Monster::MonsterArray[Monster_Num].Attack.size();i++) {
+        count = count + Monster::MonsterArray[Monster_Num].Attack_Rate[i];
+        if (count>rate) {
+            return Monster::MonsterArray[Monster_Num].Attack[i];
+        }
+    }
 }
 
 void Battle::Update_Player(int Comand) {
@@ -584,6 +591,8 @@ void Battle::Update_Monster(int Comand) {
     switch (Comand) {
     case Comand_Fight:
         Cal_Damage(Turn,Comand);
+    case Comand_Magic:
+        Cal_Damage(Turn, Comand, magic_2);
     }
 }
 
@@ -759,4 +768,49 @@ void Battle::Effect(int turn, int Comand, int sub_Num) {
         }
         break;
     }
+}
+
+void Battle::NoMagic() {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            Game::comand = -1;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    DrawFormatString(115, 385, Comand_Cr1, "使える魔法がない！");
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 300) {
+        Player::Player_Time = 0;
+        effect = false;
+    }
+
+
+}
+void Battle::NoItem() {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            Game::comand = -1;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    DrawFormatString(115, 385, Comand_Cr1, "使える道具がない！");
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 300) {
+        Player::Player_Time = 0;
+        effect = false;
+    }
+
+
 }

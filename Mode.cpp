@@ -23,6 +23,8 @@ int Mode::Select_Item;
 int Mode::Selected_Menu;
 int Mode::selected_NPC;
 bool Mode::show_message;
+
+//初期化
 void Mode::Initialize() {
     heal = 0;
     Mode::GameMode=0;
@@ -36,6 +38,7 @@ void Mode::Initialize() {
     show_message = false;
 }
 
+//フィールドモード
 void Mode::Field_Mode() {
     Player::PlayerCount = (Player::PlayerCount + 1) % Game::FPS;
     int Next_X = Player::Player_X;
@@ -139,6 +142,7 @@ void Mode::Field_Mode() {
     }
 }
 
+//メニューモード
 void Mode::Menu_Mode() {
     //int Player_Time = Player::Player_Time;
     
@@ -201,6 +205,7 @@ void Mode::Menu_Mode() {
     
 }
 
+//「とびら」、「しらべる」、「はなす」コマンドの方向選択
 void Mode::Menu_DireSelect(int Selected_Menu_Num) {
     bool haveKey = Player::haveKey;
     int Player_Time = Player::Player_Time;
@@ -578,6 +583,7 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
 
 }
 
+//アイテムの選択
 void Mode::Item_Select() {
     unsigned int Menu_Cr1 = GetColor(255, 255, 255);
     unsigned int Menu_Cr2 = GetColor(0, 0, 0);
@@ -594,15 +600,23 @@ void Mode::Item_Select() {
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
         if (keyState[KEY_INPUT_RETURN] && !old_RETURN_keyState) {
-            if(item[Player::ItemBox[Select_Item]].canuse){
-                Use_Item(Player::ItemBox[Select_Item]);
-                show_message = true;
+            if (Player::ItemBox.size()>0) {
+                if (item[Player::ItemBox[Select_Item]].canuse) {
+                    Use_Item(Player::ItemBox[Select_Item]);
+                    show_message = true;
+                }
+                else if (item[Player::ItemBox[Select_Item]].canEquip) {
+                    Use_Item(Player::ItemBox[Select_Item]);
+                    show_message = true;
+                }
+                else {
+                    show_message = true;
+                }
             }
-            else if(item[Player::ItemBox[Select_Item]].canEquip){
-                Use_Item(Player::ItemBox[Select_Item]);
-                show_message = true;
-            }else  {
-                show_message = true;
+            else {
+                Selected_Menu = -1;
+                Select_Menu_Num = 0;
+                GameMode = GameMode_FIELD;
             }
             Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
@@ -645,6 +659,7 @@ void Mode::Item_Select() {
 
 }
 
+//「つよさ」コマンド
 void Mode::Status_Show() {
 
     unsigned int Menu_Cr1 = GetColor(255, 255, 255);
@@ -712,6 +727,7 @@ void Mode::Status_Show() {
     }
 }
 
+//「どうぐ」コマンドで使うを選択した場合
 void Mode::Use_Item(int item_num) {
     switch (item_num) {
     case Item_Herb:
@@ -730,6 +746,7 @@ void Mode::Use_Item(int item_num) {
     }
 }
 
+//「どうぐ」コマンドで装備できるものを選択した場合の装備処理
 void Mode::Equip(int item_num) {
     if (Player::EquipField[item[item_num].place]==-1) {
         Player::EquipField[item[item_num].place] = item_num;
@@ -738,6 +755,7 @@ void Mode::Equip(int item_num) {
     }
 }
 
+//アイテム使用時のメッセージ表示
 void Mode::Draw_Message(int item_num) {
     if (Player::Player_Time == 0) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
@@ -768,6 +786,7 @@ void Mode::Draw_Message(int item_num) {
     }
 }
 
+//歩くエフェクト
 static int k = 0;
 void Mode::Walk_Effect(int x, int y) {
  //   if (Player::Player_X != Player::old_Player_X|| Player::old_Player_Y != Player::old_Player_Y) {
