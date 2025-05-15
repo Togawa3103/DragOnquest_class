@@ -35,6 +35,7 @@ public:
 	static bool Comand_RunAway();
 	//static void Update_Battle(int Comand);
 	static void Finish_Battle(int Comand);
+	static void Dead();
 	static void Draw_Message(int Comand, int turn,bool canrun);//“¦‚°‚é
 	static void Draw_Message(int Comand, int turn);//UŒ‚
 	static void Draw_Message(int Comand,int turn,int magic_num);//–‚–@
@@ -62,5 +63,7 @@ public:
 	static int Monster_Num;
 	static int Monster_graph;
 	static int Select_Comand;
+	static int blackout_loop_count;
+	static int brightness;
 	static bool effect;
 };

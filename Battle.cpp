@@ -30,6 +30,10 @@ int select_magic = 0;
 int select_item = 0;
 bool canuse = true;
 int bgm;
+
+int Battle::blackout_loop_count=0;
+int Battle::brightness=255;
+
 void Battle::Initialize() {
     Battle::Monster_Num= Monster::set_Monster(MAP::MAP_Num);
     Battle::Monster_graph = LoadGraph(Monster::MonsterArray[Battle::Monster_Num].Monster_Graph_Name);
@@ -443,7 +447,7 @@ void Battle::Draw_Message(int Comand, int turn, int magic_num) {
             }
             else {
 
-                DrawFormatString(115, 385, Comand_Cr1, "ゆうしゃに%dのダメージ！", damage);
+                DrawFormatString(115, 385, Comand_Cr1, "%sをとなえた。ゆうしゃに%dのダメージ！", magic[magic_2].magic_name, damage);
             }
             break;
         }
@@ -547,7 +551,7 @@ int Battle::Enemy_AI(int Monster_Num) {
     //int comand = 0;
     //int attack= Monster::MonsterArray[Monster_Num].Attack[0];
     //return attack;
-    int rate = rand() % 100 /100;
+    float rate = (rand() % 100) /100.0;
     float count = 0;
     for (int i = 0; i < Monster::MonsterArray[Monster_Num].Attack.size();i++) {
         count = count + Monster::MonsterArray[Monster_Num].Attack_Rate[i];
@@ -591,6 +595,7 @@ void Battle::Update_Monster(int Comand) {
     switch (Comand) {
     case Comand_Fight:
         Cal_Damage(Turn,Comand);
+        break;
     case Comand_Magic:
         Cal_Damage(Turn, Comand, magic_2);
     }
@@ -662,7 +667,7 @@ void Battle::Cal_Damage(int turn, int Comand, int Magic_Num) {
             Monster::now_Monster.HP = Monster::now_Monster.HP - damage;
         }
         else {
-            damage = 5+(rand()% Monster::MonsterArray[Battle::Monster_Num].enemy_status.WISE - Player::now_player_status.MAGICDEF);
+            damage = magic[Magic_Num].magic_power +(rand()% Monster::MonsterArray[Battle::Monster_Num].enemy_status.WISE - Player::now_player_status.MAGICDEF);
             if (damage <= 0) {
                 damage = 1;
             }
@@ -739,6 +744,51 @@ void Battle::Finish_Battle(int Comand) {
     DrawFormatString(115, 385, Comand_Cr1, "せんとうしゅうりょう");
     if(!canRun)DrawFormatString(115, 415, Comand_Cr1, "経験値:%d お金:%d", Monster::MonsterArray[Battle::Monster_Num].enemy_status.EXP, Monster::MonsterArray[Battle::Monster_Num].enemy_status.GOLD);
     if (Mode::GameMode == GameMode_FIELD) Battle::Monster_Num = -1;
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 300) {
+        Player::Player_Time = 0;
+    }
+
+}
+
+void Battle::Dead() {
+    if (Player::Player_Time == 0 && !Player::dead) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            //Mode::GameMode = GameMode_FIELD;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            Game::select_item = -1;
+            Game::select_magic = -1;
+            //Player::Initialize();
+            //MAP::Initialize();
+            StopSoundMem(bgm);
+            Player::dead = true;
+            blackout_loop_count = 0;
+            brightness = 255;
+        }
+    }
+    if (Player::dead) {
+        blackout_loop_count++;
+        SetDrawBright(brightness, brightness, brightness);
+        brightness--;
+        if (brightness == 0) {
+            SetDrawBright(255, 255, 255);
+            Player::dead = false;
+            Mode::GameMode = GameMode_FIELD;
+            Player::Initialize();
+            MAP::Initialize();
+        }
+    }
+
+    Draw_Battle();
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    DrawFormatString(115, 385, Comand_Cr1, "やられてしまった");
+    if (Mode::GameMode == GameMode_FIELD) Battle::Monster_Num = -1;
+
+    
+
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }

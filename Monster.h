@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Magic.h"
+#include "Battle.h"
 #include <vector>
 enum {
 	Monster_Slime,
@@ -32,7 +33,7 @@ static Monster_Status slime = {
 	{5,	-1,	0,	-1,	3,	3,	3,	0,	0,	2,	2},
 	"slime.bmp",
 	"スライム",
-	{0},
+	{Comand_Fight},
 	{1.0},
 	{}
 };
@@ -42,17 +43,17 @@ static Monster_Status bat = {
 	{8,	-1,	0,	-1,	4,	3,	5,	0,	0,	4,	3},
 	"bat.bmp",
 	"バット",
-	{0},
+	{Comand_Fight},
 	{1.0},
 	{}
 };
 
 static Monster_Status ghost = {
 	Monster_Ghost,
-	{8,	-1,	0,	-1,	4,	3,	5,	20,	2,	4,	3},
+	{8,	-1,	0,	-1,	4,	3,	5,	8,	2,	4,	3},
 	"ghost.bmp",
 	"ゴースト",
-	{0,1},
+	{Comand_Fight,Comand_Magic},
 	{0.3,0.7},
 	{magic_2}
 };

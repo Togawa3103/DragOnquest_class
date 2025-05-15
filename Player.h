@@ -86,13 +86,13 @@ public:
 	static int EquipField[Equip_MAX];
 	static bool Lv_Up;
 	static bool haveKey;
-	
+	static bool dead;
 	static PLAYER_STATUS now_player_status;
 	
 
 public:
 	Player();
 	~Player();
-	void Initialize();
+	static void Initialize();
 	static void Update_Status(int Player_lv);
 };

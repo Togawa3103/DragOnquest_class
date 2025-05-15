@@ -26,7 +26,7 @@ typedef struct {
 
 static Magic magic[] = {
 	{magic_1,magic_Type_1,25,2,"ホイミ"},
-	{magic_2,magic_Type_2,5,2,"メラ"},
+	{magic_2,magic_Type_2,8,2,"メラ"},
 	{magic_3,magic_Type_3,5,3,"スカラ"},
 	{magic_4,magic_Type_4,5,3,"ルカニ"},
 };

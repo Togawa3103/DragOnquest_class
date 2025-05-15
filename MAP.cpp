@@ -30,6 +30,7 @@ MAP::MAP() {
 MAP::~MAP() {}
 
 void MAP::Initialize() {
+    MAP::MAP_Num = 0;
     MAP::Screen_X = 0;
     MAP::Screen_Y = 0;
     MAP::Move_Count_Y = 0;

@@ -168,6 +168,7 @@ int Game::Game_StartDraw() {
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
+
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
         GetHitKeyStateAll(Mode::keyState);
@@ -207,11 +208,11 @@ void Game::Game_Main() {
 
                 }
                 //"まほう"を選択し、なにも魔法を覚えていない場合、メッセージ表示しコマンド選択に戻る
-                else if((comand== Comand_Magic&&Player::MagicBox.size() == 0)) {
+                else if((comand== Comand_Magic&&Player::MagicBox.size() == 0)&& Battle::Turn == 1) {
                     Battle::NoMagic();
                 }
                 //"どうぐ"を選択し、なにも道具を持っていない場合、メッセージ表示しコマンド選択に戻る
-                else if ((comand == Comand_Item && Player::ItemBox.size() == 0)) {
+                else if ((comand == Comand_Item && Player::ItemBox.size() == 0) && Battle::Turn == 1) {
                     Battle::NoItem();
                 }
                 //選択したコマンドが"まほう"のとき、"まほう"選択画面を表示
@@ -265,8 +266,12 @@ void Game::Game_Main() {
                 
             }
             else {
-                Battle::Finish_Battle(old_comand);
-
+                if (Player::now_player_status.HP > 0) {
+                    Battle::Finish_Battle(old_comand);
+                }
+                else {
+                    Battle::Dead();
+                }
             }
         }
         else if (Mode::GameMode==GameMode_MENU) { //メニューモード
