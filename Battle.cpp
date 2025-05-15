@@ -778,6 +778,7 @@ void Battle::Dead() {
             Mode::GameMode = GameMode_FIELD;
             Player::Initialize();
             MAP::Initialize();
+            MAP::Load_MAP(MAP::MAP_Num);
         }
     }
 
