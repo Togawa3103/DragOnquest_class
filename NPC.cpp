@@ -273,7 +273,7 @@ void NPC::Draw_SHOP(int NPC_Num) {
 				Shop::check = true;
 			}
 			else {
-				if ((Player::now_player_status.GOLD>= shop[Shop::shop_npc].Item_Price[Shop::shop_select_item])&&(Player::ItemBox.size()< ItemBox_Max)) {
+				if (Shop::Yes_No == 0 &&(Player::now_player_status.GOLD>= shop[Shop::shop_npc].Item_Price[Shop::shop_select_item])&&(Player::ItemBox.size()< ItemBox_Max)) {
 					Shop::BUY(Shop::shop_npc,shop[Shop::shop_npc].Item_List[Shop::shop_select_item]);
 				}
 				Shop::check = false;
