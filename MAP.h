@@ -42,7 +42,7 @@ typedef struct {
 }MAP_DATA;
 
 static MAP_DATA map_data[] = {
-	{"map_test_door.bmp","castle.mp3",TRUE,{{1,6,8}},{0},{{0,5,7}},{0,1,2}},
+	{"map_test_door.bmp","castle.mp3",FALSE,{{1,6,8}},{0,1,3},{{0,5,7}},{}},
 	{"map_castle.bmp","castle.mp3",FALSE,{{0,19,17}},{},{}},
 };
 

@@ -9,6 +9,7 @@
 #include "Battle.h"
 #include "Sound.h"
 #include "NPC.h"
+#include "SHOP.h"
 
 
 int Game::FPS = 144;
@@ -291,7 +292,7 @@ void Game::Game_Main() {
                     NPC::finish_text = 0;
                 }
                 else if (Talk_now) {
-                    switch (Mode::selected_NPC) {
+                    switch (npc[Mode::selected_NPC].NPC_Type) {
                     case NPC_TYPE_INN:
                         if (npc[Mode::selected_NPC].text[NPC::Talk_Count] >= 0) {
                             NPC::Draw_INNTalk(Mode::selected_NPC);
@@ -300,6 +301,10 @@ void Game::Game_Main() {
                             NPC::Draw_INN(Mode::selected_NPC);
                         }
                         break;
+                    case NPC_TYPE_SHOP:
+                        NPC::Draw_SHOP(Mode::selected_NPC);
+                        break;
+
                     default:
                         if (npc[Mode::selected_NPC].text[NPC::Talk_Count] >= 0) {
                             NPC::Draw_Talk(Mode::selected_NPC);

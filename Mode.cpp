@@ -474,7 +474,7 @@ void Mode::Menu_DireSelect(int Selected_Menu_Num) {
                 case Dire_N:
                     if (!MAP::canmove[Player::Player_Y - 1][Player::Player_X]) {
                         for (int i = 0; i < NPC::npc_num.size();i++) {
-                            if (Player::Player_Y - 1==npc[NPC::npc_num[i]].y&& Player::Player_X==npc[NPC::npc_num[i]].x) {
+                            if (Player::Player_Y - 1 == npc[NPC::npc_num[i]].y && Player::Player_X == npc[NPC::npc_num[i]].x) {
                                 Game::Talk_now = true;
                                 selected_NPC = NPC::npc_num[i];
                                 NPC::Talk_Count = 0;
