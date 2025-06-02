@@ -286,6 +286,7 @@ void NPC::Draw_SHOP(int NPC_Num) {
 				Mode::Select_Menu_Num = 0;
 				Mode::GameMode = GameMode_FIELD;
 				Shop::shop_npc == -1;
+				Game::Talk_now = false;
 			}
 			else {
 				Shop::check = false;
