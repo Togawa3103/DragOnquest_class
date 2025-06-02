@@ -364,7 +364,6 @@ void NPC::Draw_SHOP(int NPC_Num) {
 	// 商品リストの枠を表示
 	DrawBox(80, 40, 300, 260, TextBox_Cr1, TRUE);
 	DrawBox(90, 50, 290, 250, TextBox_Cr2, TRUE);
-	//DrawFormatString(100, 60 + (i) * 30, TextBox_Cr1, "%s %d", item[shop[Shop::shop_npc].Item_List[i]].Item_name, shop[Shop::shop_npc].Item_Price[i]);
 	DrawBox(100, 370, 500, 500, TextBox_Cr1, TRUE);
 	DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
 
@@ -409,27 +408,7 @@ void NPC::Draw_SHOP(int NPC_Num) {
 			DrawFormatString(445, 295, TextBox_Cr2, "いいえ");
 		}
 	}
-	/*
-	if (npc[Mode::selected_NPC].text.size() > Talk_Count) {
-		DrawBox(100, 370, 500, 500, TextBox_Cr1, TRUE);
-		DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
-
-		DrawFormatString(120, 385, TextBox_Cr1, "%s", replaceOtherStr(gold, text[npc[Mode::selected_NPC].text[Talk_Count - 1]].text).c_str());
-	}
-	DrawBox(430, 250, 520, 340, TextBox_Cr1, TRUE);
-	DrawBox(440, 260, 510, 330, TextBox_Cr2, TRUE);
-	if (Yes_No == 0) {
-		DrawBox(444, 260, 480, 290, TextBox_Cr1, TRUE);
-		DrawFormatString(445, 265, TextBox_Cr2, "はい");
-		DrawFormatString(445, 295, TextBox_Cr1, "いいえ");
-
-	}
-	else {
-		DrawBox(444, 290, 500, 325, TextBox_Cr1, TRUE);
-		DrawFormatString(445, 265, TextBox_Cr1, "はい");
-		DrawFormatString(445, 295, TextBox_Cr2, "いいえ");
-	}
-	*/
+	
 	if (Player::Player_Time != 0) {
 		Player::Player_Time = Player::Player_Time + Game::mFPS;
 	}
