@@ -247,64 +247,7 @@ void NPC::Draw_INN(int NPC_Num) {
 
 }
 
-void NPC::Draw_SHOPTalk(int NPC_Num) {
-	char* gold = NULL;
-	for (int i = 0; i < INN_MAX; i++) {
-		if (inn_list[i].NPC_Num == NPC_Num) {
-			gold = (char*)inn_list[i].price;
-		}
-	}
-	if (Player::Player_Time == 0) {
-		if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
-			if (npc[Mode::selected_NPC].text.size() - finish_text > Talk_Count) {
-				Talk_Count++;
-			}
-			if (npc[Mode::selected_NPC].text.size() - finish_text <= Talk_Count) {
-				Mode::GameMode = GameMode_FIELD;
-				Mode::Selected_Menu = -1;
-				Game::Talk_now = false;
-				Mode::Select_Menu_Num = 0;
-			}
-		}
-	}
-	if (npc[Mode::selected_NPC].text.size() - finish_text > Talk_Count) {
-		DrawBox(100, 370, 500, 500, TextBox_Cr1, TRUE);
-		DrawBox(110, 380, 490, 490, TextBox_Cr2, TRUE);
-		if (Talk_Count < 2) {
-			DrawFormatString(120, 385, TextBox_Cr1, "%s", replaceOtherStr(gold, text[npc[Mode::selected_NPC].text[Talk_Count]].text).c_str());
-			//INN::BUY(TRUE);
-		}
-		else {
-			if (Yes_No == 0) {
-				if (Player::Gold > std::stoi(gold)) {
-					DrawFormatString(120, 385, TextBox_Cr1, "%s", text[npc[Mode::selected_NPC].text[Talk_Count]]);
-					INN::BUY(TRUE);
-				}
-				else {
-					DrawFormatString(120, 385, TextBox_Cr1, "お金が足りません。");
-				}
-			}
-			else {
-				DrawFormatString(120, 385, TextBox_Cr1, "%s", text[npc[Mode::selected_NPC].text[Talk_Count]]);
-			}
-		}
-	}
-	if (Player::Player_Time != 0) {
-		Player::Player_Time = Player::Player_Time + Game::mFPS;
-	}
-	if (Player::Player_Time > 200) {
-		Player::Player_Time = 0;
-	}
-}
-
 void NPC::Draw_SHOP(int NPC_Num) {
-	//TO_DO 値段を動的に挿入
-	char* gold = NULL;
-	for (int i = 0; i < INN_MAX; i++) {
-		if (inn_list[i].NPC_Num == NPC_Num) {
-			gold = (char*)inn_list[i].price;
-		}
-	}
 	if (Player::Player_Time == 0) {
 		if (Mode::keyState[KEY_INPUT_W]) {
 			if (!Shop::check) {

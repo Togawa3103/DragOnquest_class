@@ -75,6 +75,5 @@ public:
 	static void Draw_INN(int NPC_Num);
 	static void Draw_INNTalk(int NPC_Num);
 	static void Draw_SHOP(int NPC_Num);
-	static void Draw_SHOPTalk(int NPC_Num);
 };
 
