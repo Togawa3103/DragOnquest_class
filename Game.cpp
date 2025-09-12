@@ -10,7 +10,7 @@
 #include "Sound.h"
 #include "NPC.h"
 #include "SHOP.h"
-
+#include "EVENT.h"
 
 int Game::FPS = 144;
 float Game::mFPS = 1000.f / FPS;
@@ -23,6 +23,7 @@ int Game::select_magic=-1;
 int Game::select_item = -1;
 int old_comand=-1;
 bool Game::Talk_now = false;
+int Game::event_flag = 0;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     ChangeWindowMode(TRUE); //ウインドウモード(TRUE)・フルスクリーンモード(FALSE)の変更(DXライブラリ)
@@ -51,8 +52,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     //ゲームメインループ
     //game.Game_Main(&game.player,&game.mode,&game.map);
     Game::Game_Main();
-
-    WaitKey();      // キー入力待ち
+    if (EVENT::flag.test(EVENTS_CLEAR)) {
+        Game::Endroll();
+    }
+    //WaitKey();      // キー入力待ち
     DxLib_End();    // DXライブラリ終了処理
     return 0;
 }
@@ -169,10 +172,11 @@ int Game::Game_StartDraw() {
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
-
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
         GetHitKeyStateAll(Mode::keyState);
+        Game::event_flag = EVENT::IsEvent();
+        
         //ScreenFlip();
         //ClearDrawScreen();
 
@@ -269,6 +273,9 @@ void Game::Game_Main() {
             else {
                 if (Player::now_player_status.HP > 0) {
                     Battle::Finish_Battle(old_comand);
+                    if (Game::event_flag> EVENTS_None) {
+                        EVENT::SetFlag(Game::event_flag);
+                    }
                 }
                 else {
                     Battle::Dead();
@@ -328,6 +335,23 @@ void Game::Game_Main() {
                 Mode::Status_Show();
             }
         }
+        
+        //イベントに移行
+        if (Game::event_flag > EVENTS_None) {
+            switch (Game::event_flag) {
+            case EVENTS_BATTLE:
+                if (Mode::GameMode == GameMode_FIELD) {
+                    Battle::Monster_Num = EVENT::SetMonster(EVENTS_BATTLE);
+                    EVENT::BattleInit(EVENTS_BATTLE);
+                    Mode::GameMode = GameMode_BATTLE;
+                }
+                break;
+            case EVENTS_CLEAR:
+                EVENT::SetFlag(EVENTS_CLEAR);
+                break;
+            }
+        }
+
         Mode::old_E_keyState = Mode::keyState[KEY_INPUT_E];
         Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
         Mode::old_ESCAPE_keyState = Mode::keyState[KEY_INPUT_RETURN];
@@ -338,6 +362,9 @@ void Game::Game_Main() {
             Sleep(mFPS-looptime);
         }
         end = now;
+        if (EVENT::flag.test(EVENTS_CLEAR)) {
+            break;
+        }
        // Save_Data();
     }
 }
@@ -407,4 +434,23 @@ void Game::Load_Date() {
     map.Draw_FIELD();
 
     end = clock();
+}
+
+void Game::Endroll() {
+    while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
+        unsigned int Comand_Cr1 = GetColor(255, 255, 255);
+        unsigned int Comand_Cr2 = GetColor(0, 0, 0);
+        //外枠の表示
+        DrawBox(100, 370, 450, 500, Comand_Cr1, TRUE);
+        DrawBox(110, 380, 440, 490, Comand_Cr2, TRUE);
+        DrawFormatString(220, 390, Comand_Cr1, "おしまい");
+
+        DrawFormatString(150, 435, Comand_Cr1, "Developed by 外側");
+        GetHitKeyStateAll(Mode::keyState); //キーボード入力の取得
+        //キー入力によって状態を変える
+        //エンターキーを押した場合
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            break;
+        }
+    }
 }

@@ -7,7 +7,7 @@
 #include "Monster.h"
 #include "Enum.h"
 #include "Magic.h"
-#include"Sound.h"
+#include "Sound.h"
 #include<random>
 
 int Battle::Monster_Num = -1;
@@ -29,7 +29,7 @@ int Heal = 0;
 int select_magic = 0;
 int select_item = 0;
 bool canuse = true;
-int bgm;
+//int bgm;
 
 int Battle::blackout_loop_count=0;
 int Battle::brightness=255;
@@ -47,9 +47,9 @@ void Battle::Initialize() {
     Battle::check_speed();
     effect = false;
    
-    bgm = LoadSoundMem("battle.mp3");
-    ChangeVolumeSoundMem(80, bgm);
-    PlaySoundMem(bgm,DX_PLAYTYPE_LOOP);
+    Sound::bgm = LoadSoundMem("battle.mp3");
+    ChangeVolumeSoundMem(80, Sound::bgm);
+    PlaySoundMem(Sound::bgm,DX_PLAYTYPE_LOOP);
 
 }
 void Battle::Draw_Battle() {
@@ -733,7 +733,7 @@ void Battle::Finish_Battle(int Comand) {
             Game::select_item = -1;
             Game::select_magic = -1;
             
-            StopSoundMem(bgm);
+            StopSoundMem(Sound::bgm);
         }
 
     }
@@ -762,7 +762,7 @@ void Battle::Dead() {
             Game::select_magic = -1;
             //Player::Initialize();
             //MAP::Initialize();
-            StopSoundMem(bgm);
+            StopSoundMem(Sound::bgm);
             Player::dead = true;
             blackout_loop_count = 0;
             brightness = 255;

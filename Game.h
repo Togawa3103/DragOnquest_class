@@ -1,3 +1,4 @@
+#pragma once
 #include <time.h>
 #include "DxLib.h"
 #include "Player.h"
@@ -48,6 +49,7 @@ public:
 	static void Save_Data(); //セーブ
 	static void Load_Date(); //ロード
 	static void Start(); //初めから開始
+	static void Endroll();
 public:
 	static int Game_Mode; //ゲームの状態
 	static int FPS; //FPS
@@ -59,5 +61,5 @@ public:
 	static int select_magic; //戦闘時選択している魔法
 	static int select_item; //戦闘時選択しているアイテム
 	static bool Talk_now; //会話しているか
-	
+	static int event_flag;
 };

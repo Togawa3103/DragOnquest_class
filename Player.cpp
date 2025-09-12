@@ -11,9 +11,13 @@ int Player::old_Player_Y = Player_Y;
 int Player::HP = 20;
 int Player::MP = 5;
 int Player::Player_Lv = 1;
-int Player::Gold = 0;
+int Player::Gold = 5;
 int Player::Exp = 0;
-std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4 }; //‚à‚¿‚à‚Ì
+
+//std::vector<int> Player::ItemBox = { 0,1,2,3,4,5}; //‚à‚¿‚à‚Ì
+std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4,4,4,4 }; //‚à‚¿‚à‚Ì
+//std::vector<int> Player::ItemBox = {}; //‚à‚¿‚à‚Ì
+
 std::vector<int> Player::MagicBox = {};
 int Player::EquipField[Equip_MAX] = {-1,-1,-1,-1};
 PLAYER_STATUS Player::now_player_status = (player_status[Player::Player_Lv - 1]);
@@ -21,6 +25,7 @@ PLAYER_STATUS Player::now_player_status = (player_status[Player::Player_Lv - 1])
 
 bool Player::haveKey=false;
 bool Player::Lv_Up = false;
+bool Player::dead = false;
 
 
 Player::Player() {
@@ -31,9 +36,18 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
+	Player::Player_Time = 0;
+	Player::MENU_Time = 0;
+	Player::PlayerCount = 0;
+	Player::Player_X = 4;
+	Player::Player_Y = 4;
+	Player::old_Player_X = Player::Player_X;
+	Player::old_Player_Y = Player::Player_Y;
+	Player::HP = now_player_status.MAXHP;
+	Player::MP = now_player_status.MAXMP;
 	now_player_status = (player_status[Player_Lv - 1]);
-	now_player_status.HP = HP;
-	now_player_status.MP = MP;
+	now_player_status.HP = now_player_status.MAXHP;
+	now_player_status.MP = now_player_status.MAXMP;
 	now_player_status.GOLD = Gold;
 	now_player_status.EXP = Exp;
 	int* p;

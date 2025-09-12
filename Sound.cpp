@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "MAP.h"
 int Sound::SHandle;
+int Sound::bgm;
 Sound::Sound() {
 
 }

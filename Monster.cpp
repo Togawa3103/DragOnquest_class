@@ -6,7 +6,7 @@
 int Monster::now_HP;
 int Monster::now_MP;
 PLAYER_STATUS Monster::now_Monster;
-std::vector<Monster_Status> Monster::MonsterArray = { slime,bat,ghost };
+std::vector<Monster_Status> Monster::MonsterArray = { slime,bat,ghost,king_slime};
 int Monster::set_Monster(int Map_Num) {
 	int count_MonsterNum = map_data[Map_Num].Monster_Array.size();
 	std::random_device rand;

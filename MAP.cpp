@@ -110,14 +110,27 @@ void MAP::Draw_FIELD() {
             (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (k) * (Player::Player_Y - Player::old_Player_Y),
             graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
     }
-    if (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
-        k = k + 1;
-        if (k == 50) {
-            k = 0;
+    if ((Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)&& Player::Player_Time < 300) {
+        if (k < 50) { 
+            k = k + 1; 
         }
+    }
+    else {
+        k = 0;
     }
     //Mode::Walk_Effect(Player::Player_X, Player::Player_Y);
     NPC::Draw_NPC(NPC::npc_num);
+    
+    if (true) {//デバッグ用座標表示
+        unsigned int Comand_Cr1 = GetColor(255, 255, 255);
+        unsigned int Comand_Cr2 = GetColor(0, 0, 0);
+
+        DrawBox(200, 370, 350, 500, Comand_Cr1, TRUE);
+        DrawBox(210, 380, 340, 490, Comand_Cr2, TRUE);
+        DrawFormatString(220, 390, Comand_Cr1, "%d", Player::Player_X);
+        DrawFormatString(220, 390 +20, Comand_Cr1, "%d", Player::Player_Y); 
+        DrawFormatString(220, 390+ 40, Comand_Cr1, "%d", MAP::MAP_Num);
+    }
 }
 
 void MAP::Load_MAP(int MAP_Num) {
