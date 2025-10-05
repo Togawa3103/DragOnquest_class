@@ -61,7 +61,7 @@ static Monster_Status ghost = {
 static Monster_Status king_slime = {
 	Monster_KingSlime,
 	{15,	-1,	0,	-1,	1,	1,	1,	1,	1,	1,	1},
-	"slime.bmp",
+	"kingslime.bmp",
 	"キングスライム",
 	{Comand_Fight},
 	{1},

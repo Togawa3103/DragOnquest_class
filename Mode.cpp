@@ -96,19 +96,20 @@ void Mode::Field_Mode() {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }
     if (Player::Player_Time > 300) {
-        if (MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_STEPS && (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)) {
+        if (MAP::ChangeMAP(Player::Player_X, Player::Player_Y)
+            && (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)) {
             for (int i = 0; i < map_data[MAP::MAP_Num].map_info.size(); i++) {
                 if (Player::Player_X == map_data[MAP::MAP_Num].map_info[i].Start_X && Player::Player_Y == map_data[MAP::MAP_Num].map_info[i].Start_Y) {
                     Sound::StopSound(MAP::map_bgm);
+                    int toStep = map_data[MAP::MAP_Num].map_info[i].toStep_num;
                     MAP::MAP_Num = map_data[MAP::MAP_Num].map_info[i].toMap_Num;
 
                     MAP::File_Name = map_data[MAP::MAP_Num].Map_Name;
                     MAP::Load_MAP(MAP::MAP_Num);
 
 
-
-                    Player::Player_X = map_data[MAP::MAP_Num].map_info[i].Start_X;
-                    Player::Player_Y = map_data[MAP::MAP_Num].map_info[i].Start_Y;
+                    Player::Player_X = map_data[MAP::MAP_Num].map_info[toStep].Start_X;
+                    Player::Player_Y = map_data[MAP::MAP_Num].map_info[toStep].Start_Y;
                     Player::old_Player_X = Player::Player_X;
                     Player::old_Player_Y = Player::Player_Y;
                     if (Player::Player_X > 8) {
@@ -117,14 +118,15 @@ void Mode::Field_Mode() {
                     else {
                         MAP::Move_Count_X = 0;
                     }
-                    if (Player::Player_Y > 7) {
+                    if (Player::Player_Y > 5) {
                         MAP::Move_Count_Y = Player::Player_Y - 4;
                     }
                     else {
                         MAP::Move_Count_Y = 0;
                     }
                     MAP::Screen_X = 5;
-                    MAP::Screen_Y = 5;
+                    MAP::Screen_Y = 4;
+                    break;
                 }
             }
         }

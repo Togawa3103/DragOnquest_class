@@ -130,6 +130,8 @@ void MAP::Draw_FIELD() {
         DrawFormatString(220, 390, Comand_Cr1, "%d", Player::Player_X);
         DrawFormatString(220, 390 +20, Comand_Cr1, "%d", Player::Player_Y); 
         DrawFormatString(220, 390+ 40, Comand_Cr1, "%d", MAP::MAP_Num);
+        DrawFormatString(220, 390 + 60, Comand_Cr1, "%d", MAP::Screen_X);
+        DrawFormatString(220, 390 + 80, Comand_Cr1, "%d", MAP::Screen_Y);
     }
 }
 
@@ -165,6 +167,7 @@ void MAP::Load_MAP(int MAP_Num) {
                     DrawFormatString(100, 50, Cr, "%d %d %d", bgr.b, bgr.g, bgr.r);
                     //WaitKey();
                     cellType = i;
+                    break;
                 }
             }
             if (cellType == -1) {
@@ -192,4 +195,10 @@ void MAP::Load_MAP(int MAP_Num) {
     NPC::Load_NPC(MAP::MAP_Num);
     //PlaySoundMem(MAP::map_bgm[MAP_Num], DX_PLAYTYPE_LOOP);
    // Sound::PlayBGMSound(map_bgm);
+}
+
+bool MAP::ChangeMAP(int Player_x, int Player_y) {
+    return (MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_STEPS 
+        || MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_CASTLE 
+        || MAP::map[Player::Player_Y][Player::Player_X] == CELL_TYPE_DUNGEON);
 }

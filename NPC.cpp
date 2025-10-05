@@ -22,6 +22,7 @@ int NPC::Talk_Count;
 int NPC::Yes_No=0;
 int NPC::finish_text = 0;
 void NPC::Load_NPC(int MAP_Num) {
+	npc_num.clear();
 	for (int i = 0; i < NPC_MAX; i++) {
 		if (npc[i].MAP_Num == MAP_Num) {
 			if (npc_graph[npc[i].NPC_Type].load_graph==-1) {
