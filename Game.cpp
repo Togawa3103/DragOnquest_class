@@ -172,9 +172,22 @@ int Game::Game_StartDraw() {
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
+    FILE* fp = fopen("keystate.dat", "w");
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
         GetHitKeyStateAll(Mode::keyState);
+        
+        const char* conma = ",";
+        fprintf(fp,"%d,",Mode::keyState[KEY_INPUT_S]);
+        fprintf(fp, "%d,", conma);
+        fprintf(fp, "%d,", Player::Player_X);
+        fprintf(fp, "%d,", Player::Player_Y);
+        fprintf(fp, "%d,", Player::old_Player_X);
+        fprintf(fp, "%d,", Player::old_Player_Y);
+        fprintf(fp, "%d,", MAP::Screen_X);
+        fprintf(fp, "%d,", MAP::Screen_Y);
+        fprintf(fp, "%d,", MAP::player_moving);
+        fprintf(fp, "%d\n", Player::Player_Time);
         Game::event_flag = EVENT::IsEvent();
         
         //ScreenFlip();
@@ -273,7 +286,7 @@ void Game::Game_Main() {
             else {
                 if (Player::now_player_status.HP > 0) {
                     Battle::Finish_Battle(old_comand);
-                    if (Game::event_flag> EVENTS_None) {
+                    if (Game::event_flag> EVENTS_None && Mode::GameMode == GameMode_FIELD) {
                         EVENT::SetFlag(Game::event_flag);
                     }
                 }
@@ -363,9 +376,10 @@ void Game::Game_Main() {
         }
         end = now;
         if (EVENT::flag.test(EVENTS_CLEAR)) {
+            StopSoundMem(Sound::bgm);
             break;
         }
-       // Save_Data();
+        Save_Data();
     }
 }
 
@@ -388,9 +402,14 @@ void Game::Save_Data() {
     fwrite(&savedata,sizeof(savedata),1,fp);
     fwrite(&Player::now_player_status, sizeof(int)*STATUS_MAX, 1, fp);
     //fwrite(&Player::MagicBox, sizeof(int) * Player::MagicBox.size(), 1, fp);
-    fwrite(&MAP::Door_Open, sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
+    //fwrite(&MAP::Door_Open, sizeof(int) * MAP::Door_Open.size(), 1, fp);
+    for (int i = 0; i < DOOR_MAX; i++) {
+        fwrite(&(MAP::Door_Open[i]), sizeof(int), 1, fp);
+    }
     //fwrite(&Player::ItemBox.size(), sizeof(int), 1, fp);
-    fwrite(&Player::ItemBox, sizeof(int) * Player::ItemBox.size(), 1, fp);
+    for (int i = 0; i < savedata.ItemBox_size; i++) {
+        fwrite(&(Player::ItemBox[i]), sizeof(int), 1, fp);
+    }
     fclose(fp);
 }
 
@@ -403,16 +422,25 @@ void Game::Load_Date() {
     Mode mode;
     
     fread(&savedata,sizeof(savedata),1,fp);
+    Player::ItemBox.clear();
     fread(&Player::now_player_status, sizeof(int) * STATUS_MAX, 1, fp);
     //fread(&Player::MagicBox[0], sizeof(Player::MagicBox[0]) * Player::MagicBox.size(), 1, fp);
     Player::HP = Player::now_player_status.HP;
     Player::MP = Player::now_player_status.MP;
-    fread(&MAP::Door_Open, sizeof(MAP::Door_Open[0]) * MAP::Door_Open.size(), 1, fp);
-    int * tmp=(int*)malloc(sizeof(&Player::ItemBox[0]) * savedata.ItemBox_size);
-    fread(tmp, sizeof(&Player::ItemBox[0]) * savedata.ItemBox_size, 1, fp);
-    for (int i = 0; i < savedata.ItemBox_size;i++) {
-        Player::ItemBox.push_back(*(tmp+i));
+    int* tmp3 = (int*)malloc(sizeof(int));
+    for (int i = 0; i < DOOR_MAX; i++) {
+        //       fread(tmp1+i, sizeof(int), 1, fp);
+        //       fread(tmp + i, sizeof(Player::ItemBox[0]) * savedata.ItemBox_size, 1, fp);
+        fread(tmp3, sizeof(int), 1, fp);
+        MAP::Door_Open[i]=(*(tmp3));
     }
+    for (int i = 0; i < savedata.ItemBox_size; i++) {
+//       fread(tmp1+i, sizeof(int), 1, fp);
+//       fread(tmp + i, sizeof(Player::ItemBox[0]) * savedata.ItemBox_size, 1, fp);
+        fread(tmp3,sizeof(int),1,fp);
+        Player::ItemBox.push_back(*(tmp3));
+    }
+
     fclose(fp);
 
     map.Initialize();
@@ -452,5 +480,7 @@ void Game::Endroll() {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             break;
         }
+
+        Mode::old_RETURN_keyState = Mode::keyState[KEY_INPUT_RETURN];
     }
 }

@@ -12,7 +12,7 @@ typedef struct {
 }INN_PRICE_LIST;
 
 static INN_PRICE_LIST inn_list[] = {
-	{2,"5" },
+	{3,"5" },
 };
 
 class INN :public Shop {

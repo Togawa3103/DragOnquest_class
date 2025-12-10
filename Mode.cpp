@@ -23,7 +23,7 @@ int Mode::Select_Item;
 int Mode::Selected_Menu;
 int Mode::selected_NPC;
 bool Mode::show_message;
-
+bool Mode::move = false;
 //‰Šú‰»
 void Mode::Initialize() {
     heal = 0;
@@ -43,8 +43,8 @@ void Mode::Field_Mode() {
     Player::PlayerCount = (Player::PlayerCount + 1) % Game::FPS;
     int Next_X = Player::Player_X;
     int Next_Y = Player::Player_Y;
-    if (Player::Player_Time == 0) {
-
+    if (Player::Player_Time == 0 && (Player::Player_X == Player::old_Player_X && Player::Player_Y == Player::old_Player_Y)) {
+        GetHitKeyStateAll(Mode::keyState);
         if (keyState[KEY_INPUT_W] && !keyState[KEY_INPUT_S]) {
 
             if (MAP::canmove[Player::Player_Y - 1][Player::Player_X]) {
@@ -84,17 +84,20 @@ void Mode::Field_Mode() {
 
 
         if (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y) {
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            //Player::Player_Time = Player::Player_Time + Game::mFPS;
+            Mode::move = true;
         }
-    }
 
+    }
+    //if (Player::Player_Time != 0) {
+    if (Mode::move) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
     MAP::Draw_FIELD();
 
     
    
-    if (Player::Player_Time != 0) {
-        Player::Player_Time = Player::Player_Time + Game::mFPS;
-    }
+    
     if (Player::Player_Time > 300) {
         if (MAP::ChangeMAP(Player::Player_X, Player::Player_Y)
             && (Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)) {
@@ -125,7 +128,7 @@ void Mode::Field_Mode() {
                         MAP::Move_Count_Y = 0;
                     }
                     MAP::Screen_X = 5;
-                    MAP::Screen_Y = 4;
+                    MAP::Screen_Y = 5;
                     break;
                 }
             }
@@ -138,6 +141,7 @@ void Mode::Field_Mode() {
                 Battle::Battle_Now = true;
             }
         }
+        Mode::move = false;
         Player::old_Player_X = Player::Player_X;
         Player::old_Player_Y = Player::Player_Y;
         Player::Player_Time = 0;

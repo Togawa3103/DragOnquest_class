@@ -69,7 +69,7 @@ public:
 	static int Yes_No;
 	static int finish_text;
 	static void Load_NPC(int MAP_Num);
-	static void Draw_NPC(std::vector<int> npc_num);
+	static void Draw_NPC(std::vector<int> npc_num,int scrool_x,int scrool_y);
 	static void Draw_Talk(int NPC_Num);
 	static void Draw_Question(int NPC_Num);
 	static void Draw_INN(int NPC_Num);

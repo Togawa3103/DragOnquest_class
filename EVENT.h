@@ -30,7 +30,7 @@ typedef struct {
 static EVENT_DATA events[] = {
 	{0,0,0,0,-1},
 	{MAP_KINGROOM,5,5,0,-1},
-	{MAP_CASTLE,14,14,0, Monster_KingSlime},
+	{MAP_DUNGEON,6,3,0, Monster_KingSlime},
 };
 
 class EVENT {

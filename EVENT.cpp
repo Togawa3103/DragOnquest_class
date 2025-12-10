@@ -7,11 +7,11 @@ EVENT::EVENT() {
 };
 
 int EVENT::IsEvent() {
-	if (!flag.test(EVENTS_CLEAR)&&MAP::MAP_Num== events[EVENTS_CLEAR].map_num && (Player::Player_X == events[EVENTS_CLEAR].x && Player::Player_Y == events[EVENTS_CLEAR].y)) {
+	if (!flag.test(EVENTS_CLEAR)&&flag.test(EVENTS_BATTLE)) {
 		//flag |= (1<< EVENTS_CLEAR); 不要
 		return EVENTS_CLEAR;
 	}
-	else if (!flag.test(EVENTS_BATTLE) && MAP::MAP_Num == events[EVENTS_BATTLE].map_num && (Player::Player_X == events[EVENTS_BATTLE].x && Player::Player_Y == events[EVENTS_BATTLE].x)){
+	else if (!flag.test(EVENTS_BATTLE) && MAP::MAP_Num == events[EVENTS_BATTLE].map_num && (Player::Player_X == events[EVENTS_BATTLE].x && Player::Player_Y == events[EVENTS_BATTLE].y)){
 		//flag |= (1 << EVENTS_BATTLE);　不要
 		return EVENTS_BATTLE;
 	}

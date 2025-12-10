@@ -37,7 +37,7 @@ void NPC::Load_NPC(int MAP_Num) {
 	}
 }
 
-void NPC::Draw_NPC(std::vector<int> npc_num) {
+void NPC::Draw_NPC(std::vector<int> npc_num,int scrool_x,int scrool_y) {
 	for (int i = 0; i < npc_num.size();i++) {
 		int getNpc = 0;
 		for (int j = 0; j < NPC_MAX;j++) {
@@ -46,7 +46,7 @@ void NPC::Draw_NPC(std::vector<int> npc_num) {
 				break;
 			}
 		}
-		DrawExtendGraph((npc[getNpc].x - MAP::Move_Count_X) * 50, (npc[getNpc].y - MAP::Move_Count_Y) * 50, (npc[getNpc].x - MAP::Move_Count_X) * 50 + 50, (npc[getNpc].y - MAP::Move_Count_Y) * 50 + 50, npc_graph[npc[getNpc].NPC_Type].load_graph, TRUE);
+		DrawExtendGraph((npc[getNpc].x - MAP::Move_Count_X) * 50-scrool_x, (npc[getNpc].y - MAP::Move_Count_Y) * 50 - scrool_y, (npc[getNpc].x - MAP::Move_Count_X) * 50 + 50 - scrool_x, (npc[getNpc].y - MAP::Move_Count_Y) * 50 + 50 - scrool_y, npc_graph[npc[getNpc].NPC_Type].load_graph, TRUE);
 
 		//DrawExtendGraph((npc[npc_num[i]].x-MAP::Move_Count_X) * 50, (npc[npc_num[i]].y -MAP::Move_Count_Y)*50,( npc[npc_num[i]].x - MAP::Move_Count_X) * 50 + 50, (npc[npc_num[i]].y - MAP::Move_Count_Y) * 50 + 50, npc_graph[npc[npc_num[i]].NPC_Type].load_graph,TRUE);
 		

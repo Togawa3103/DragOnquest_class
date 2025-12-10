@@ -47,8 +47,8 @@ typedef struct {
 static MAP_DATA map_data[] = {
 	{"map_test_door.bmp","castle.mp3",FALSE,{{1,6,8,0}},{0,1,3},{{0,5,7}},{}},
 	{"map_castle.bmp","castle.mp3",FALSE,{{0,19,17,0},{2,20,35,0}},{},{}},
-	{"map_field.bmp","castle.mp3",FALSE,{{1,6,6,1},{3,15,12,0}},{},{},{0,1}},
-	{"map_dungeon.bmp","castle.mp3",TRUE,{{2,6,8,1}},{},{}},
+	{"map_field.bmp","castle.mp3",TRUE,{{1,6,6,1},{3,15,12,0}},{},{},{0,1}},
+	{"map_dungeon.bmp","castle.mp3",TRUE,{{2,6,8,1}},{},{},{2}},
 };
 
 typedef struct {
@@ -77,7 +77,9 @@ static CELLDESC cellDescs[] = {
 	{201,174,255,TRUE},//CELL_TYPE_DUNGEON
 	{127,127,127,TRUE},//CELL_TYPE_ROCK
 	{195,195,195,FALSE},//CELL_TYPE_WALL_ROCK
+	{255,255,255,TRUE},//CELL_TYPE_BOSS
 	{255,0,0,FALSE},//CELL_TYPE_PLAYER
+	
 };
 
 
@@ -93,6 +95,7 @@ static GRAPHDESC graphDescs[] = {
 	{"dungeon.bmp",},//GRAPH_TYPE_DUNGEON,
 	{"rock.bmp",},//GRAPH_TYPE_ROCK,
 	{"wall_rock.bmp",},//GRAPH_TYPE_WALL_ROCK,
+	{"kingslime.bmp",},//CELL_TYPE_BOSS
 	{"Player.bmp",},//GRAPH_TYPE_PLAYER,
 	{"Player_turn.bmp",},//GRAPH_TYPE_PLAYER2,
 };
@@ -109,6 +112,7 @@ enum {
 	CELL_TYPE_DUNGEON,
 	CELL_TYPE_ROCK,
 	CELL_TYPE_WALL_ROCK,
+	CELL_TYPE_BOSS,
 	CELL_TYPE_PLAYER,
 	CELL_TYPE_NPC,
 	CELL_TYPE_MAX,
@@ -126,6 +130,7 @@ enum {
 	GRAPH_TYPE_DUNGEON,
 	GRAPH_TYPE_ROCK,
 	GRAPH_TYPE_WALL_ROCK,
+	GRAPH_TYPE_BOSS,
 	GRAPH_TYPE_PLAYER,
 	GRAPH_TYPE_PLAYER2,
 	GRAPH_TYPE_NPC_KING,
@@ -146,7 +151,7 @@ public:
 	static int MAP_Num;
 	static int map_bgm[MAP_MAX];
 	static std::vector<int> Door_Open;
-
+	static int player_moving;
 	MAP();
 	~MAP();
 	static void Initialize();

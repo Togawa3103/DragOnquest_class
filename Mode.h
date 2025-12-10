@@ -82,6 +82,7 @@ public:
 	static int Selected_Menu;
 	static int selected_NPC;
 	static bool show_message;
+	static bool move;
 
 	static void Initialize();
 	static void Field_Mode();

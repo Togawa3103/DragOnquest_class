@@ -45,7 +45,7 @@ void Player::Initialize() {
 	Player::old_Player_Y = Player::Player_Y;
 	Player::HP = now_player_status.MAXHP;
 	Player::MP = now_player_status.MAXMP;
-	now_player_status = (player_status[Player_Lv - 1]);
+	if(Player::Player_Lv==1)now_player_status = (player_status[Player_Lv - 1]);
 	now_player_status.HP = now_player_status.MAXHP;
 	now_player_status.MP = now_player_status.MAXMP;
 	now_player_status.GOLD = Gold;
