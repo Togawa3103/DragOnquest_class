@@ -292,7 +292,8 @@ void NPC::Draw_SHOP(int NPC_Num) {
 			else {
 				Shop::check = false;
 			}
-			Player::Player_Time = Player::Player_Time + Game::mFPS;
+			//Player::Player_Time = Player::Player_Time + Game::mFPS;
+			Player::Player_Time = 0;
 		}
 	}
 

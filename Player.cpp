@@ -15,8 +15,8 @@ int Player::Gold = 5;
 int Player::Exp = 0;
 
 //std::vector<int> Player::ItemBox = { 0,1,2,3,4,5}; //‚à‚¿‚à‚Ì
-std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4,4,4,4 }; //‚à‚¿‚à‚Ì
-//std::vector<int> Player::ItemBox = {}; //‚à‚¿‚à‚Ì
+//std::vector<int> Player::ItemBox = { 0,1,2,3,4,5,4,4,4,4 }; //‚à‚¿‚à‚Ì
+std::vector<int> Player::ItemBox = {}; //‚à‚¿‚à‚Ì
 
 std::vector<int> Player::MagicBox = {};
 int Player::EquipField[Equip_MAX] = {-1,-1,-1,-1};

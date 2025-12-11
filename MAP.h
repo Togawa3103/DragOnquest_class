@@ -152,6 +152,9 @@ public:
 	static int map_bgm[MAP_MAX];
 	static std::vector<int> Door_Open;
 	static int player_moving;
+	static int scrool_x;
+	static int scrool_y;
+
 	MAP();
 	~MAP();
 	static void Initialize();

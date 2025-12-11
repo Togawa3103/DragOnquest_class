@@ -172,22 +172,30 @@ int Game::Game_StartDraw() {
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
-    FILE* fp = fopen("keystate.dat", "w");
+    /*
+    bool debug = false;
+    if(debug)FILE* fp = fopen("keystate.dat", "w");
+    */
+    
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Player::Update_Status(Player::Player_Lv);
         GetHitKeyStateAll(Mode::keyState);
-        
-        const char* conma = ",";
-        fprintf(fp,"%d,",Mode::keyState[KEY_INPUT_S]);
-        fprintf(fp, "%d,", conma);
-        fprintf(fp, "%d,", Player::Player_X);
-        fprintf(fp, "%d,", Player::Player_Y);
-        fprintf(fp, "%d,", Player::old_Player_X);
-        fprintf(fp, "%d,", Player::old_Player_Y);
-        fprintf(fp, "%d,", MAP::Screen_X);
-        fprintf(fp, "%d,", MAP::Screen_Y);
-        fprintf(fp, "%d,", MAP::player_moving);
-        fprintf(fp, "%d\n", Player::Player_Time);
+        /*
+        if (debug) {
+            fprintf(fp, "%d,", Mode::keyState[KEY_INPUT_S]);
+            fprintf(fp, "%d,", Player::Player_X);
+            fprintf(fp, "%d,", Player::Player_Y);
+            fprintf(fp, "%d,", Player::old_Player_X);
+            fprintf(fp, "%d,", Player::old_Player_Y);
+            fprintf(fp, "%d,", MAP::Screen_X);
+            fprintf(fp, "%d,", MAP::Screen_Y);
+            fprintf(fp, "%d,", MAP::player_moving);
+            fprintf(fp, "%d,", MAP::scrool_x);
+            fprintf(fp, "%d,", MAP::scrool_y);
+
+            fprintf(fp, "%d\n", Player::Player_Time);
+        }
+        */
         Game::event_flag = EVENT::IsEvent();
         
         //ScreenFlip();

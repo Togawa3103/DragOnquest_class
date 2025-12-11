@@ -20,8 +20,8 @@ int MAP::map_bgm[MAP_MAX];
 
 std::vector<int> MAP::Door_Open(DOOR_MAX, 0);
 int MAP::player_moving = 0;
-static int scrool_x = 0;
-static int scrool_y = 0;
+int MAP::scrool_x = 0;
+int MAP::scrool_y = 0;
 static bool scrool_flag_x = false;
 static bool scrool_flag_y = false;
 MAP::MAP() {
@@ -49,6 +49,8 @@ void MAP::Draw_FIELD() {
     else if (CheckSoundMem(MAP::map_bgm[MAP::MAP_Num]) && Mode::GameMode == GameMode_BATTLE) {
         Sound::StopSound(MAP::map_bgm);
     }
+
+    //スクロール制御
     if ((Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)
         && !(scrool_flag_x || scrool_flag_y)
         && Player::Player_Time < Game::mFPS+1) {
@@ -84,51 +86,7 @@ void MAP::Draw_FIELD() {
         }
     }
 
-    if (scrool_flag_x) {
-        if (scrool_x * scrool_x <= 2500) {
-            if (MAP::Screen_X == 8) {
-                scrool_x = scrool_x + 1;
-            }
-            else if (MAP::Screen_X == 3) {
-                scrool_x = scrool_x - 1;
-            }
-        }
-        else {
-            scrool_flag_x = false;
-            scrool_x = 0;
-            scrool_y = 0;
-            if (MAP::Screen_X == 8) {
-                Move_Count_X++;
-            }
-            else if (MAP::Screen_X == 3) {
-                Move_Count_X--;
-            }
-        }
-    }
-    if (scrool_flag_y) {
-        if (scrool_y * scrool_y <= 2500) {
-
-            if (MAP::Screen_Y == 7) {
-                scrool_y = scrool_y + 1;
-            }
-            else if (MAP::Screen_Y == 4) {
-                scrool_y = scrool_y - 1;
-            }
-        }
-        else {
-            scrool_flag_y = false;
-            scrool_x = 0;
-            scrool_y = 0;
-            if (MAP::Screen_Y == 7) {
-                Move_Count_Y++;
-            }
-            else if (MAP::Screen_Y == 4) {
-                Move_Count_Y--;
-            }
-        }
-    }
-
-
+    
     for (int i = -1; i < VIEW_RANGE_HEIGHT + 1; i++) {
         for (int j = -1; j < VIEW_RANGE_WIDHT + 1; j++) {
             DrawExtendGraph(j * 50 - scrool_x, i * 50 - scrool_y, j * 50 + 50 - scrool_x, i * 50 + 50 - scrool_y,
@@ -157,6 +115,8 @@ void MAP::Draw_FIELD() {
             (Player::old_Player_Y - MAP::Move_Count_Y) * 50 + 50 + (MAP::player_moving) * (Player::Player_Y - Player::old_Player_Y),
             graphDescs[GRAPH_TYPE_PLAYER2].Graph_Handle, TRUE);
     }
+
+    //描画後プレイヤーのスクロール更新
     if ((Player::Player_X != Player::old_Player_X || Player::Player_Y != Player::old_Player_Y)
         && Player::Player_Time <= 300
         && (MAP::player_moving < 50)) {
@@ -170,6 +130,53 @@ void MAP::Draw_FIELD() {
     else {
         MAP::player_moving = 0;
     }
+
+    //描画後マップのスクロール更新
+    if (scrool_flag_x) {
+        if (scrool_x * scrool_x <= 2500) {
+            if (MAP::Screen_X == 8) {
+                scrool_x = scrool_x + 1;
+            }
+            else if (MAP::Screen_X == 3) {
+                scrool_x = scrool_x - 1;
+            }
+        }
+        if (scrool_x * scrool_x > 2500) {
+            scrool_flag_x = false;
+            scrool_x = 0;
+            scrool_y = 0;
+            if (MAP::Screen_X == 8) {
+                Move_Count_X++;
+            }
+            else if (MAP::Screen_X == 3) {
+                Move_Count_X--;
+            }
+        }
+    }
+    if (scrool_flag_y) {
+        if (scrool_y * scrool_y <= 2500) {
+
+            if (MAP::Screen_Y == 7) {
+                scrool_y = scrool_y + 1;
+            }
+            else if (MAP::Screen_Y == 4) {
+                scrool_y = scrool_y - 1;
+            }
+        }
+        if (scrool_y * scrool_y > 2500) {
+            scrool_flag_y = false;
+            scrool_x = 0;
+            scrool_y = 0;
+            if (MAP::Screen_Y == 7) {
+                Move_Count_Y++;
+            }
+            else if (MAP::Screen_Y == 4) {
+                Move_Count_Y--;
+            }
+        }
+    }
+
+
     //Mode::Walk_Effect(Player::Player_X, Player::Player_Y);
     NPC::Draw_NPC(NPC::npc_num,scrool_x,scrool_y);
     
