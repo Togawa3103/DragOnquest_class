@@ -233,7 +233,10 @@ void Game::Game_Main() {
                         //ステータス更新
                         Battle::Update_Player(comand);
                     }
-
+                }
+                //"にげる"を選択し、イベントバトルの場合、メッセージ表示しコマンド選択に戻る
+                else if (comand == Comand_Run&&Game::event_flag>EVENTS_None) {
+                    Battle::CantRun();
                 }
                 //"まほう"を選択し、なにも魔法を覚えていない場合、メッセージ表示しコマンド選択に戻る
                 else if((comand== Comand_Magic&&Player::MagicBox.size() == 0)&& Battle::Turn == 1) {

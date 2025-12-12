@@ -8,6 +8,7 @@
 #include "Enum.h"
 #include "Magic.h"
 #include "Sound.h"
+#include "EVENT.h"
 #include<random>
 
 int Battle::Monster_Num = -1;
@@ -564,7 +565,7 @@ int Battle::Enemy_AI(int Monster_Num) {
 void Battle::Update_Player(int Comand) {
     switch (Comand) {
     case Comand_Run:
-        if (Battle::Comand_RunAway() && !canRun) {
+        if (Battle::Comand_RunAway() && !canRun&&Game::event_flag==EVENTS_None) {
             canRun = true;
         }
         break;
@@ -782,6 +783,13 @@ void Battle::Dead() {
             Player::Initialize();
             MAP::Initialize();
             MAP::Load_MAP(MAP::MAP_Num);
+            if (Game::event_flag > EVENTS_None) {
+                switch (Game::event_flag) {
+                case EVENTS_BATTLE:
+                    Game::event_flag = EVENTS_None;
+                    break;
+                }
+            }
         }
     }
 
@@ -846,6 +854,7 @@ void Battle::NoMagic() {
 
 
 }
+
 void Battle::NoItem() {
     if (Player::Player_Time == 0) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
@@ -858,6 +867,29 @@ void Battle::NoItem() {
     DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
     DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
     DrawFormatString(115, 385, Comand_Cr1, "égÇ¶ÇÈìπãÔÇ™Ç»Ç¢ÅI");
+    if (Player::Player_Time != 0) {
+        Player::Player_Time = Player::Player_Time + Game::mFPS;
+    }
+    if (Player::Player_Time > 300) {
+        Player::Player_Time = 0;
+        effect = false;
+    }
+
+
+}
+
+void Battle::CantRun() {
+    if (Player::Player_Time == 0) {
+        if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
+            Game::comand = -1;
+            Player::Player_Time = Player::Player_Time + Game::mFPS;
+        }
+
+    }
+
+    DrawBox(100, 370, 500, 500, Comand_Cr1, TRUE);
+    DrawBox(110, 380, 490, 490, Comand_Cr2, TRUE);
+    DrawFormatString(115, 385, Comand_Cr1, "Ç±ÇÃÇπÇÒÇ∆Ç§ÇÕÇ…Ç∞ÇÁÇÍÇ»Ç¢ÅI");
     if (Player::Player_Time != 0) {
         Player::Player_Time = Player::Player_Time + Game::mFPS;
     }

@@ -56,6 +56,7 @@ public:
 	
 	static void NoMagic();
 	static void NoItem();
+	static void CantRun();
 
 	static int Turn;//0:Enemy 1:Player
 	static bool Battle_Now;
