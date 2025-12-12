@@ -729,7 +729,8 @@ void Battle::Finish_Battle(int Comand) {
             Mode::GameMode = GameMode_FIELD;
             if(!canRun)Player::Exp = Player::Exp + Monster::MonsterArray[Battle::Monster_Num].enemy_status.EXP;
             if(!canRun)Player::Gold = Player::Gold + Monster::MonsterArray[Battle::Monster_Num].enemy_status.GOLD;
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            //Player::Player_Time = Player::Player_Time + Game::mFPS;
+            Player::Player_Time = 0;
             Game::select_item = -1;
             Game::select_magic = -1;
             
@@ -757,7 +758,9 @@ void Battle::Dead() {
     if (Player::Player_Time == 0 && !Player::dead) {
         if (Mode::keyState[KEY_INPUT_RETURN] && !Mode::old_RETURN_keyState) {
             //Mode::GameMode = GameMode_FIELD;
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            //Player::Player_Time = Player::Player_Time + Game::mFPS;
+            Player::Player_Time = 0;
+
             Game::select_item = -1;
             Game::select_magic = -1;
             //Player::Initialize();

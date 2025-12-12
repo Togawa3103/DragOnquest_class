@@ -172,9 +172,10 @@ int Game::Game_StartDraw() {
 void Game::Game_Main() {
     //Initialize();
     Player::Player_Time = 0;
+   
     /*
     bool debug = false;
-    if(debug)FILE* fp = fopen("keystate.dat", "w");
+    FILE* fp = fopen("keystate.dat", "w");
     */
     
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
@@ -196,6 +197,7 @@ void Game::Game_Main() {
             fprintf(fp, "%d\n", Player::Player_Time);
         }
         */
+
         Game::event_flag = EVENT::IsEvent();
         
         //ScreenFlip();
@@ -459,6 +461,9 @@ void Game::Load_Date() {
     //Player::ItemBox = savedata.ItemBox;
     Player::Player_X = savedata.Player_X;
     Player::Player_Y = savedata.Player_Y;
+    Player::old_Player_X= savedata.Player_X;
+    Player::old_Player_Y = savedata.Player_Y;
+
     map.MAP_Num = savedata.MAP_Num;
     map.Screen_X = savedata.Screen_X;
     map.Screen_Y = savedata.Screen_Y;
