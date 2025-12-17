@@ -624,7 +624,7 @@ void Mode::Item_Select() {
                 Select_Menu_Num = 0;
                 GameMode = GameMode_FIELD;
             }
-            Player::Player_Time = Player::Player_Time + Game::mFPS;
+            //Player::Player_Time = Player::Player_Time + Game::mFPS;
         }
         if (keyState[KEY_INPUT_ESCAPE]) {
             Selected_Menu = -1;

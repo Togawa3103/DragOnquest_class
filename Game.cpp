@@ -466,7 +466,8 @@ void Game::Load_Date() {
     Player::Player_Y = savedata.Player_Y;
     Player::old_Player_X= savedata.Player_X;
     Player::old_Player_Y = savedata.Player_Y;
-
+    Player::Exp = Player::now_player_status.EXP;
+    Player::Gold = Player::now_player_status.GOLD;
     map.MAP_Num = savedata.MAP_Num;
     map.Screen_X = savedata.Screen_X;
     map.Screen_Y = savedata.Screen_Y;
